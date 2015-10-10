@@ -1,6 +1,9 @@
 import wx
 import Playlist as pl
 import server_requests as ut
+from functools import reduce
+import sndhdr
+from pydub import AudioSegment
 
 class Funky_GUI(wx.Frame):
 
@@ -75,7 +78,7 @@ class Funky_GUI(wx.Frame):
         self.repeatButton = wx.BitmapButton(self.panel, id=-1, bitmap=img_repeat, size=(32,32))
         self.Bind(wx.EVT_BUTTON, self.on_repeat_button, self.repeatButton)
 
-        self.listctrl = self.playlist.getListCtrl(self.panel,32*5+256*self.GUI_RESOLUTION,256*self.GUI_RESOLUTION)
+        self.listctrl = self.playlist.getListCtrl(self.panel,32*5+256*self.GUI_RESOLUTION+5*10,256*self.GUI_RESOLUTION)
 
         ######################SIZERS AND STUFF#######################
 #        for var in ('playOrPauseButton','prevButton','nextButton','stopButton','repeatButton','search_bar'):
@@ -110,14 +113,13 @@ class Funky_GUI(wx.Frame):
     def search_torrents(self,event):
         search_list = self.search_bar.GetValue().split()
         if len(search_list) > 1:
-            query = "http://162.243.156.22/lookup?q="+reduce(lambda x,y: x+' '+y,)
+            query = "http://162.243.156.22/lookup?q="+reduce(lambda x,y: x+'+'+y,search_list)
         else: query = search_list[0]
         responce = ut.ping(query)
         if responce:
             meta_data = ut.query_server(query)
         else:
             print("server not up: " + responce); return
-        print(self.search_bar.GetValue(),meta_data)
         TEXT=meta_data
         dlg1 = wx.MessageDialog(None,caption="Conferm Download:", message=TEXT ,style=wx.OK|wx.CANCEL|wx.ICON_EXCLAMATION)
         if dlg1.ShowModal() == wx.ID_OK:
@@ -138,16 +140,20 @@ class Funky_GUI(wx.Frame):
             self.isplaying=False
         else:
             self.playOrPauseButton.SetBitmapLabel(self.img_pause)
+            self.AudioSegment.from_file(pl.getCurrentSong(), format= sndhdr.what(pl.getCurrentSong())[0]) ##
             self.isplaying=True
         return #xxx
 
     def on_next_button(self,event):
+        self.AudioSegment.from_file(pl.getNextSong(), format= sndhdr.what(pl.getNextSong())[0]) ##
         return #xxx
 
     def on_prev_button(self,event):
+        self.AudioSegment.from_file(pl.getPrevSong(), format= sndhdr.what(pl.getPrevSong())[0]) ##
         return 
 
     def on_stop_button(self,event):
+        
         return
 
     def on_repeat_button(self,event):
