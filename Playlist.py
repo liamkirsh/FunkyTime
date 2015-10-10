@@ -49,26 +49,30 @@ class Playlist:
         if self.size > 0:
             self.selectSong(0)
 
+        self.getCurrentSong()
+
         return ctrl
 
     def selectSong(self, index):
-        if 0 <= index and index < self.size:
+        if index < 0:
+            index = self.size - 1
+        if index >= self.size:
+            index = 0
 
-            if self.selected >= 0:
-                self.ctrl.SetItemBackgroundColour(self.selected, self.nbg)
+        if self.selected >= 0:
+            self.ctrl.SetItemBackgroundColour(self.selected, self.nbg)
 
-            self.ctrl.SetItemBackgroundColour(index, self.hbg)
-
-            self.selected = index
-        else:
-            raise Exception('Out of bounds.')
+        self.ctrl.SetItemBackgroundColour(index, self.hbg)
+        self.selected = index
 
     def getCurrentSong(self):
-        return './Music/beet_5_1.wav'
+        return self.ctrl.GetItem(self.selected, 2)
 
     def getNextSong(self):
-        return './Music/beet_5_1.wav'
+        self.selectSong(self.selected + 1)
+        return self.getCurrentSong()
 
     def getPrevSong(self):
-        return './Music/beet_5_1.wav'
+        self.selectSong(self.selected - 1)
+        return self.getCurrentSong()
 
