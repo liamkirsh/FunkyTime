@@ -2,13 +2,15 @@ import wx
 import DatabaseAPI
 import pdb
 
-DEMO = False
+DEMO = True
 
 class Playlist:
-    def __init__(self):
+    def __init__(self, hbg = 'LIGHT BLUE', nbg = 'WHITE'): 
         self.db = DatabaseAPI.Database()
         self.size = -1
         self.selected = -1
+        self.hbg = hbg
+        self.nbg = nbg
 
         if DEMO:
             self.db.empty()
@@ -26,7 +28,6 @@ class Playlist:
         self.ctrl.SetStringItem(self.size, 1, album)
         self.ctrl.SetStringItem(self.size, 2, path)
         self.size += 1
-
     
     def getListCtrl(self,panel,w,h):
         ctrl = wx.ListCtrl(panel, id=-1, size=(w,h), style=wx.LC_REPORT)
@@ -52,7 +53,13 @@ class Playlist:
 
     def selectSong(self, index):
         if 0 <= index and index < self.size:
-            pdb.set_trace()
+
+            if self.selected >= 0:
+                self.ctrl.SetItemBackgroundColour(self.selected, self.nbg)
+
+            self.ctrl.SetItemBackgroundColour(index, self.hbg)
+
+            self.selected = index
         else:
             raise Exception('Out of bounds.')
 
