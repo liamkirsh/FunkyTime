@@ -108,7 +108,10 @@ class Funky_GUI(wx.Frame):
 
 
     def search_torrents(self,event):
-        query = "http://162.243.156.22/lookup?q="+reduce(lambda x,y: x+'%20'+y,self.search_bar.GetValue().split())
+        search_list = self.search_bar.GetValue().split()
+        if len(search_list) > 1:
+            query = "http://162.243.156.22/lookup?q="+reduce(lambda x,y: x+' '+y,)
+        else: query = search_list[0]
         responce = ut.ping(query)
         if responce:
             meta_data = ut.query_server(query)
