@@ -1,6 +1,6 @@
 import wx
 import Playlist as pl
-import utility as ut
+import server_requests as ut
 
 class Funky_GUI(wx.Frame):
 

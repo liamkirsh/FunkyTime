@@ -7,9 +7,11 @@ def get_metadata_from_server(QUERY):
     payload = { 'q' : QUERY }
     r = requests.get(server_name + '/lookup', params=payload)
     return r.json()
-def init_download_on_server(QUERY):
+def init_download_on_server(JSON):
     #tell server to download the query
-    pass #TODO
+    payload = JSON
+    r = requests.post(server_name + '/initiate', params=payload)
+    return r.text
 def poll_server(QUERY):
     pass #TODO
 
