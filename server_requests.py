@@ -1,11 +1,12 @@
-import requests as r
+import requests
 
 server_name = "http://162.243.156.22"
 
 def get_metadata_from_server(QUERY):
     #get spotify info from server
-    response = r.get(server_name, q = QUERY);
-    return response.json()
+    payload = { 'q' : QUERY }
+    r = requests.get(server_name + '/lookup', params=payload)
+    return r.json()
 def init_download_on_server(QUERY):
     #tell server to download the query
     pass #TODO
