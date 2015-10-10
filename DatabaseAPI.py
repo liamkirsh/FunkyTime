@@ -1,5 +1,4 @@
 import sqlite3
-import pdb
 
 no_table_ex = Exception('Playlist Table does not exist.')
 yes_table_ex = Exception('Playlist Table does exist.')
@@ -7,9 +6,12 @@ yes_table_ex = Exception('Playlist Table does exist.')
 class Database:
     def __init__(self):
         self.conn = sqlite3.connect('local.db')
+        
+        if not self.db_exists():
+            self.create_db()
 
-        if not self.exists():
-            self.create()
+    def db_exists(self):
+        return False
 
     def close(self):
         self.conn.close()

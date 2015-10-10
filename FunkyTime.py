@@ -1,5 +1,6 @@
 import wx
 import Playlist as pl
+import utility as ut
 
 class Funky_GUI(wx.Frame):
 
@@ -103,12 +104,22 @@ class Funky_GUI(wx.Frame):
         vbox0.Fit(self)
 
 
-
 #######################
 
 
     def search_torrents(self,event):
-        print(self.search_bar.GetValue())
+        query = "http://162.243.156.22/lookup?q="+reduce(lambda x,y: x+'%20'+y,self.search_bar.GetValue().split())
+        responce = ut.ping(query)
+        if responce:
+            meta_data = ut.query_server(query)
+        else:
+            print("server not up: " + responce); return
+        print(self.search_bar.GetValue(),meta_data)
+        TEXT=meta_data
+        dlg1 = wx.MessageDialog(None,caption="Conferm Download:", message=TEXT ,style=wx.OK|wx.CANCEL|wx.ICON_EXCLAMATION)
+        if dlg1.ShowModal() == wx.ID_OK:
+            print('you hit okay')
+            dlg1.Destroy()
 
     def close_app(self,event):
         self.Destroy()
