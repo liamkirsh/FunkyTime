@@ -1,29 +1,56 @@
 import wx
 import DatabaseAPI
+import pdb
 
-APP_EXIT = 1
+DEMO = False
 
 class Playlist:
     def __init__(self):
         self.db = DatabaseAPI.Database()
-        self.playlist = []
+        self.size = -1
 
-    def findSongAlbum(self, song_name):
-        return "Generic Album Name"
+        if DEMO:
+            self.db.empty()
+            self.db.create()
+            self.db.loadDemo()
 
-    def downloadFile(self, song_name, album_name):
-        return None
+    def addSong(self, song):
+        name = song['name']
+        album = song['album']
+        path = song['path']
 
-    def addSongWithAlbum(self, song):
-        self.db.addSongToPlaylist(song, 'default')
-        self.playlist.append(song)
+        self.db.addSong(name, album, path)
 
+        self.ctrl.InsertStringItem(self.size, name)
+        self.ctrl.SetStringItem(self.size, 1, album)
+        self.ctrl.SetStringItem(self.size, 2, path)
+        self.size += 1
+
+    
     def getListCtrl(self,panel,w,h):
-        return wx.ListCtrl(panel, id=-1, size=(w,h), style=wx.LC_REPORT)
+        ctrl = wx.ListCtrl(panel, id=-1, size=(w,h), style=wx.LC_REPORT)
+
+        ctrl.InsertColumn(0, 'Song')
+        ctrl.InsertColumn(1, 'Album')
+        ctrl.InsertColumn(2, 'File Path')
+        
+        pl = self.db.getPlaylist()
+        if pl:
+            self.size = len(pl)
+            for i, song in enumerate(pl):
+                ctrl.InsertStringItem(i, song[0])
+                ctrl.SetStringItem(i, 1, song[1])
+                ctrl.SetStringItem(i, 2, song[2])
+
+        self.ctrl = ctrl
+        return ctrl
 
     def getCurrentSong(self):
         return './Music/beet_5_1.wav'
 
     def getNextSong(self):
+        return './Music/beet_5_1.wav'
+
+    def getPrevSong(self):
         return './Music/beet_5_1.wav'
 

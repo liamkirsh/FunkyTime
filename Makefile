@@ -4,5 +4,5 @@ run:
 test-db:
 	python -i DatabaseAPI.py
 
-test-playlist:
+test-pl:
 	python -i Playlist.py
