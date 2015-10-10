@@ -89,7 +89,7 @@ class Url(object):
         """
         Open url and return amount of pages
         """
-        html = requests.get(url, verify=True).text #added verify=False
+        html = requests.get(url, verify=False).text #added verify=False
         pq = PyQuery(html)
         try:
             tds = int(pq("h2").text().split()[-1])
@@ -252,7 +252,7 @@ class Results(object):
         """
         Return all rows on page
         """
-        html = requests.get(self.url.build(), verify=True).text #added verify=False
+        html = requests.get(self.url.build(), verify=False).text #added verify=False
         if re.search('did not match any documents', html):
             return []
         pq = PyQuery(html)
