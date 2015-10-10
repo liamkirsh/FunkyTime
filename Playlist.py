@@ -8,6 +8,7 @@ class Playlist:
     def __init__(self):
         self.db = DatabaseAPI.Database()
         self.size = -1
+        self.selected = -1
 
         if DEMO:
             self.db.empty()
@@ -43,7 +44,17 @@ class Playlist:
                 ctrl.SetStringItem(i, 2, song[2])
 
         self.ctrl = ctrl
+
+        if self.size > 0:
+            self.selectSong(0)
+
         return ctrl
+
+    def selectSong(self, index):
+        if 0 <= index and index < self.size:
+            pdb.set_trace()
+        else:
+            raise Exception('Out of bounds.')
 
     def getCurrentSong(self):
         return './Music/beet_5_1.wav'
