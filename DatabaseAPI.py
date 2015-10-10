@@ -7,11 +7,8 @@ class Database:
     def __init__(self):
         self.conn = sqlite3.connect('local.db')
         
-        if not self.db_exists():
-            self.create_db()
-
-    def db_exists(self):
-        return False
+        if not self.exists():
+            self.create()
 
     def close(self):
         self.conn.close()
