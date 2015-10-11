@@ -1,5 +1,5 @@
 import wx
-import wx.media
+import wx.media, wx.animate
 import Playlist as pl
 import server_requests as sr
 from functools import reduce
@@ -77,6 +77,7 @@ class Funky_GUI(wx.Frame):
     def CreateUI(self):
         """ """
         self.toolbar0 = wx.ToolBar(self.panel, id=-1)
+        self.gif = None 
 
 ####################
 
@@ -199,6 +200,7 @@ class Funky_GUI(wx.Frame):
         dlg1 = wx.MessageDialog(None,caption="Confirm Download:", message=str(Text) ,style=wx.OK|wx.CANCEL|wx.ICON_EXCLAMATION)
         if dlg1.ShowModal() == wx.ID_OK:
             download_hash = sr.init_download_on_server(meta_data)
+            self.animateGIF("./img/loading_spinner.gif")
             dlg1.Destroy()
         else: return
         data = None
@@ -231,6 +233,11 @@ class Funky_GUI(wx.Frame):
         if ctype == 'audio/x-wav':
             fileout = open('music/'+open_meta_data['title']+'.wav', 'wb')
             fileout.write(data)
+
+    def animateGIF(self, image):
+        self.gif = wx.animate.GIFAnimationCtrl(self,-1,image,pos= (30,30),size=(20,20))
+        self.gif.GetPlayer()
+        self.gifPlay()
 
     def onBrowse(self, event):
         """
