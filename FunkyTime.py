@@ -58,8 +58,14 @@ class Funky_GUI(wx.Frame):
 
 ####################
 
+        backend = wx.media.MEDIABACKEND_QUICKTIME
         try:
-            self.mediaPlayer = wx.media.MediaCtrl(self.panel, id=-1, style=wx.SIMPLE_BORDER)
+            self.mediaPlayer = wx.media.PreMediaCtrl()
+            ok = self.mediaPlayer.Create(self.panel, szBackend=backend)
+            if not ok:
+                raise NotImplementedError
+            self.mediaPlayer.PostCreate(self.mediaPlayer)
+            self.Bind(wx.media.EVT_MEDIA_LOADED, self.onMediaLoad)
         except NotImplementedError:
             self.Destroy()
             raise
@@ -131,11 +137,11 @@ class Funky_GUI(wx.Frame):
 #######################
     def onSeek(self, evt):
         offset = self.sliderctrl.GetValue()
-        self.mediaPlayer.Seek(offset)
+        self.mediaPlayer.Seek(offset * 1000)
 
     def onTimer(self, evt):
         offset = self.mediaPlayer.Tell()
-        self.sliderctrl.SetValue(offset)
+        self.sliderctrl.SetValue(offset // 1000)
 
 #######################
 
@@ -160,17 +166,16 @@ class Funky_GUI(wx.Frame):
         print('to be cont')
 
     def on_play_button(self,event):
-        self.playSong("./CUNT.wav")
-#        current_song = self.playlist.getCurrentSong()
-#        if current_song == None: return
-#        if self.isplaying:
-#            self.playOrPauseButton.SetBitmapLabel(self.img_play)
-#            self.isplaying=False
-##            self.mediaPlayer.Pause()
-#        else:
-#            self.playOrPauseButton.SetBitmapLabel(self.img_pause)
-#            self.isplaying=True
-#            self.playSong(current_song)
+        current_song = self.playlist.getCurrentSong()
+        if current_song == None: return
+        if self.isplaying:
+            self.playOrPauseButton.SetBitmapLabel(self.img_play)
+            self.isplaying=False
+            self.mediaPlayer.Pause()
+        else:
+            self.playOrPauseButton.SetBitmapLabel(self.img_pause)
+            self.isplaying=True
+            self.playSong(current_song)
 
 
     def on_next_button(self,event):
@@ -219,27 +224,16 @@ class Funky_GUI(wx.Frame):
 #        self.GetSizer().Layout()
 #        self.sliderctrl.SetRange(0, self.mediaPlayer.Length())
 
-    def playSong(self,song):
-        wf = wave.open(song, 'rb')
-        p = pyaudio.PyAudio()
-        def callback(in_data, frame_count, time_info, status):
-            data = wf.readframes(frame_count)
-            return (data, pyaudio.paContinue)
+    def onMediaLoad(self, evt):
+        self.mediaPlayer.Play()
 
-        stream = p.open(format=p.get_format_from_width(wf.getsampwidth()),
-                        channels=wf.getnchannels(),
-                        rate=wf.getframerate(),
-                        output=True,
-                        stream_callback=callback)
-        stream.start_stream()
-
-        while stream.is_active():
-            time.sleep(0.1)
-
-        stream.stop_stream()
-        stream.close()
-        wf.close()
-        p.terminate()
+    def playSong(self, current_song):
+        current_song = '/Users/isak/Projects/FunkyTime/bass.wav'
+        if not self.mediaPlayer.Load(current_song):
+            wx.MessageBox("Unable to load %s: Unsupported format?" % current_song,
+                          "ERROR",
+                          wx.ICON_ERROR | wx.OK)
+        self.sliderctrl.SetRange(0, self.mediaPlayer.Length() // 1000)
 
 ###########################
 
