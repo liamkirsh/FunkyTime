@@ -1,4 +1,5 @@
 import sqlite3
+import os
 
 no_table_ex = Exception('Playlist Table does not exist.')
 yes_table_ex = Exception('Playlist Table does exist.')
@@ -55,7 +56,15 @@ class Database:
 
     def getPlaylist(self):
         if self.exists():
-            return list(self.conn.cursor().execute('SELECT thumb, song_name, artist_name, album_name, file_path FROM Playlist;'))
+            stuff = list(self.conn.cursor().execute('SELECT thumb, song_name, artist_name, album_name, file_path FROM Playlist;'))
+            result = []
+            for f in stuff:
+                if os.path.isfile(f[4]):
+                    result.append(f)
+                else:
+                    print 'Not found:', f[4]
+                    self.deleteSong(f[4])
+            return result
         raise no_table_ex
 
 db = Database()
