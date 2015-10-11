@@ -3,17 +3,13 @@ import subprocess
 
 server_name = "http://162.243.156.22"
 
-def ping(host):
-    ping_response = subprocess.Popen(["/bin/ping", "-c1", "-w100", server_name + '/lookup?q=' + host], stdout=subprocess.PIPE).stdout.read()
-    return ping_response
-
 def get_metadata_from_server(QUERY):
     #get spotify info from server
     payload = { 'q' : QUERY }
     print(QUERY)
     r = requests.get(server_name + '/lookup', params=payload)
     print(r.json())
-    return r.json(),r.error()
+    return r.json()
 
 def init_download_on_server(JSON):
     #tell server to download the query

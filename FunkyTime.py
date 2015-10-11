@@ -7,6 +7,7 @@ from pydub import AudioSegment
 import pyaudio
 import wave
 import time
+import requests
 import sys
 
 class Funky_GUI(wx.Frame):
@@ -119,25 +120,13 @@ class Funky_GUI(wx.Frame):
 
 
     def search_torrents(self,event):
-        """search_list = self.search_bar.GetValue().split()
-        if len(search_list) > 1:
-            query = "http://162.243.156.22/lookup?q="+reduce(lambda x,y: x+'+'+y,search_list)
-        else: query = search_list[0]
-        responce = sr.ping(query)
-        if responce:
-            meta_data = sr.get_metadata_from_server(self.search_bar.GetValue())
-        else:
-            print("server not up: " + responce); return
-        TEXT=meta_data"""  #try to see if this works
         query=self.search_bar.GetValue()
-        responce = sr.ping(query)
-#        if responce:
-        TEXT,ERROR = sr.get_metadata_from_server(query)
-        print(ERROR)
-        if ERROR != 200: print("server not up: " + str(ERROR)); return
-#        else:
-#            print("server not up: " + responce); return
-        dlg1 = wx.MessageDialog(None,caption="Conferm Download:", message=str(TEXT) ,style=wx.OK|wx.CANCEL|wx.ICON_EXCLAMATION)
+        try:
+            TEXT = sr.get_metadata_from_server(query)
+        except(requests.exceptions.RequestException):
+            print "server not up"
+            return
+        dlg1 = wx.MessageDialog(None,caption="Confirm Download:", message=str(TEXT) ,style=wx.OK|wx.CANCEL|wx.ICON_EXCLAMATION)
         if dlg1.ShowModal() == wx.ID_OK:
             print('you hit okay')
             dlg1.Destroy()
