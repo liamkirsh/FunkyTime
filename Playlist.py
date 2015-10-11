@@ -140,7 +140,7 @@ class Playlist:
 class StarredListCtrl(wx.ListCtrl, lc.CheckListCtrlMixin):
 
     def __init__(self, parent, size, callback):
-        wx.ListCtrl.__init__(self, parent, -1, size, style=wx.LC_REPORT)
+        wx.ListCtrl.__init__(self, parent, -1, size=size, style=wx.LC_REPORT)
 
         saved = wx.Bitmap('img/yellowstar.png', type=wx.BITMAP_TYPE_PNG)
         notsaved = wx.Bitmap('img/blackstar.png', type=wx.BITMAP_TYPE_PNG)

@@ -7,6 +7,7 @@ from glob import glob
 import AudioConversion as ac
 import requests
 import sys,os
+import json
 import pdb
 
 STOP = -1
@@ -165,7 +166,7 @@ class Funky_GUI(wx.Frame):
 
         vbox0 = wx.BoxSizer(wx.VERTICAL)
         vbox0.Add(hbox0)
-        vbox0.Add(self.listctrl)
+        vbox0.Add(self.listctrl, flag=wx.ALL, border=8)
         vbox0.Add(hbox1)
         vbox0.Add(self.mediaPlayer)
 
@@ -189,14 +190,23 @@ class Funky_GUI(wx.Frame):
         query=self.search_bar.GetValue()
         if self.search_media_for_file(query): return
         try:
-            TEXT = sr.get_metadata_from_server(query)
+            meta_data = sr.get_metadata_from_server(query)
+            open_meta_data = json.loads(meta_data)
         except(requests.exceptions.RequestException):
             print "server not up"
             return
-        dlg1 = wx.MessageDialog(None,caption="Confirm Native Play:", message=str(TEXT) ,style=wx.OK|wx.CANCEL|wx.ICON_EXCLAMATION)
+        Text = "Was this the file you were looking for?\nSong: " + open_meta_data['title'] + "\nAlbum: " + open_meta_data['album'] + "\nArtist: " + open_meta_data['artist']
+        dlg1 = wx.MessageDialog(None,caption="Confirm Download:", message=str(Text) ,style=wx.OK|wx.CANCEL|wx.ICON_EXCLAMATION)
         if dlg1.ShowModal() == wx.ID_OK:
-            print('you hit okay')
+            download_hash = sr.init_download_on_server(meta_data)
             dlg1.Destroy()
+        else: return
+        data = None
+        print(download_hash)
+        while data is None:
+            print('polling')
+            data,ctype = sr.poll_server(download_hash)
+        print(ctype)
 
     def onBrowse(self, event):
         """
