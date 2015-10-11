@@ -77,7 +77,6 @@ class Funky_GUI(wx.Frame):
     def CreateUI(self):
         """ """
         self.toolbar0 = wx.ToolBar(self.panel, id=-1)
-        self.gif = None 
 
 ####################
 
@@ -197,10 +196,9 @@ class Funky_GUI(wx.Frame):
             print "server not up"
             return
         Text = "Was this the file you were looking for?\nSong: " + open_meta_data['title'] + "\nAlbum: " + open_meta_data['album'] + "\nArtist: " + open_meta_data['artist']
-        dlg1 = wx.MessageDialog(None,caption="Confirm Download:", message=str(Text) ,style=wx.OK|wx.CANCEL|wx.ICON_EXCLAMATION)
+        dlg1 = wx.essageDialog(None,caption="Confirm Download:", message=str(Text) ,style=wx.OK|wx.CANCEL|wx.ICON_EXCLAMATION)
         if dlg1.ShowModal() == wx.ID_OK:
             download_hash = sr.init_download_on_server(meta_data)
-            self.animateGIF("./img/loading_spinner.gif")
             dlg1.Destroy()
         else: return
         data = None
@@ -234,13 +232,10 @@ class Funky_GUI(wx.Frame):
             fileout = open('music/'+open_meta_data['title']+'.wav', 'wb')
             fileout.write(data)
 
-    def animateGIF(self, image):
-        self.gif = wx.animate.GIFAnimationCtrl(self,-1,image,pos= (30,30),size=(20,20))
-        self.gif.GetPlayer()
-        self.gifPlay()
+
 
     def onBrowse(self, event):
-        """
+        """git 
         Opens file dialog to browse for music
         """
         wildcard = "/"
@@ -387,6 +382,10 @@ class Funky_GUI(wx.Frame):
 
     def shuffle(self, event):
         pass
+
+
+
+
 
 ###########################
 
