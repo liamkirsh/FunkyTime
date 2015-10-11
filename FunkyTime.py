@@ -3,6 +3,8 @@ import wx.media
 import Playlist as pl
 import server_requests as sr
 from functools import reduce
+from glob import glob
+import AudioConversion as ac
 import requests
 import sys,os
 import pdb
@@ -32,6 +34,9 @@ class Funky_GUI(wx.Frame):
         self.menubar = wx.MenuBar()
 
         menu_file = wx.Menu()
+
+        m_add = menu_file.Append(-1, "&Add File\tctrl-o", "")
+        self.Bind(wx.EVT_MENU, self.add_file, m_add)
 
         m_save = menu_file.Append(-1, "&Save File\tctrl-s", "")
         self.Bind(wx.EVT_MENU, self.save_file, m_save)
@@ -112,6 +117,7 @@ class Funky_GUI(wx.Frame):
         self.sliderctrl = wx.Slider(self.panel, id=-1, minValue=0, maxValue=60, size=(32*5+256*self.GUI_RESOLUTION+5*10,40*self.GUI_RESOLUTION), style=wx.SL_HORIZONTAL | wx.SL_LABELS )
         self.slidertime = wx.StaticText(self.panel)
         self.Bind(wx.EVT_SLIDER, self.onSeek, self.sliderctrl)
+
         self.timer = wx.Timer(self)
         self.Bind(wx.EVT_TIMER, self.onTimer)
         self.timer.Start(100)
@@ -158,6 +164,7 @@ class Funky_GUI(wx.Frame):
 
     def search_torrents(self,event):
         query=self.search_bar.GetValue()
+        if search_media_for_file(query): return
         try:
             TEXT = sr.get_metadata_from_server(query)
         except(requests.exceptions.RequestException):
@@ -172,14 +179,13 @@ class Funky_GUI(wx.Frame):
         """
         Opens file dialog to browse for music
         """
-        wildcard = "MP3 (*.mp3)|*.mp3|"     \
-                   "WAV (*.wav)|*.wav"
+        wildcard = "/"
         dlg = wx.FileDialog(
-            self, message="Choose a file",
+            self, message="Choose a Directory",
             defaultDir=self.currentFolder, 
             defaultFile="",
             wildcard=wildcard,
-            style=wx.OPEN | wx.CHANGE_DIR
+            style=wx.OPEN 
             )
         if dlg.ShowModal() == wx.ID_OK:
             path = dlg.GetPath()
@@ -191,6 +197,28 @@ class Funky_GUI(wx.Frame):
 
     def delete_file(self, event):
         pass
+
+    def add_file(self, event):
+        """
+        Opens file dialog to browse for music
+        """
+        wildcard = "MP3 (*.mp3)|*.mp3|"     \
+                   "WAV (*.wav)|*.wav"
+        dlg = wx.FileDialog(
+            self, message="Choose a file",
+            defaultDir=self.currentFolder, 
+            defaultFile="",
+            wildcard=wildcard,
+            style=wx.OPEN | wx.CHANGE_DIR
+            )
+        if dlg.ShowModal() == wx.ID_OK:
+            path = dlg.GetPath()
+            if path.split('.')[-1] == 'mp3': final_path = ac.convert_mp3_to_wav(path)
+            else: final_path = path
+            name = path.split('/')[-1].split('.')[0]
+            album = path.split('/')[-2]
+            self.playlist.addSong({'path':final_path,'name':name,'album':album})
+        dlg.Destroy()
 
 ##########################Menu Files##############################
 
@@ -219,7 +247,7 @@ class Funky_GUI(wx.Frame):
         self.playSong(self.playlist.getNextSong())
 
     def on_prev_button(self,event):
-        return 
+        self.playSong(self.playlist.getPrevSong())
 
     def on_stop_button(self,event):
         return
@@ -230,27 +258,20 @@ class Funky_GUI(wx.Frame):
     def button_download(self,event):
         return #xxx
 
-#    def playSong(self, current_song):
-#        if not self.mediaPlayer.Play():
-#            if not self.mediaPlayer.Load(current_song):
-#                wx.MessageBox("Unable to load %s: Unsupported format?" % current_song,
-#                              "ERROR",
-#                              wx.ICON_ERROR | wx.OK)
-#                return
-#        self.mediaPlayer.SetInitialSize()
-#        self.GetSizer().Layout()
-#        self.sliderctrl.SetRange(0, self.mediaPlayer.Length())
-
     def onMediaLoad(self, evt):
         self.mediaPlayer.Play()
 
     def playSong(self, current_song):
-        current_song = '/Users/isak/Projects/FunkyTime/bass.wav'
         if not self.mediaPlayer.Load(current_song):
             wx.MessageBox("Unable to load %s: Unsupported format?" % current_song,
                           "ERROR",
                           wx.ICON_ERROR | wx.OK)
         self.sliderctrl.SetRange(0, self.mediaPlayer.Length() // 1000)
+
+    def search_media_for_file(query):
+        """return bool of wather or not file is found, if file is found pass it to playlist"""
+        print(query)
+        return False
 
 ###########################
 
