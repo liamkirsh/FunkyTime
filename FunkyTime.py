@@ -182,7 +182,7 @@ class Funky_GUI(wx.Frame):
         except(requests.exceptions.RequestException):
             print "server not up"
             return
-        dlg1 = wx.MessageDialog(None,caption="Confirm Download:", message=str(TEXT) ,style=wx.OK|wx.CANCEL|wx.ICON_EXCLAMATION)
+        dlg1 = wx.MessageDialog(None,caption="Confirm Native Play:", message=str(TEXT) ,style=wx.OK|wx.CANCEL|wx.ICON_EXCLAMATION)
         if dlg1.ShowModal() == wx.ID_OK:
             print('you hit okay')
             dlg1.Destroy()
@@ -192,11 +192,11 @@ class Funky_GUI(wx.Frame):
         Opens file dialog to browse for music
         """
         wildcard = "/"
-        currentDirectory=os.getcwd()
-        dlg = wx.DirDialog(self.panel, "choose media directory:",defaultPath = currentDirectory ,style=wx.DD_DEFAULT_STYLE | wx.DD_NEW_DIR_BUTTON | wx.DD_CHANGE_DIR)
+        dlg = wx.DirDialog(self.panel, "choose media directory:", defaultPath=self.mediaFolder ,style=wx.DD_DEFAULT_STYLE | wx.DD_NEW_DIR_BUTTON)
         if dlg.ShowModal() == wx.ID_OK:
             path = dlg.GetPath()
-            self.mediaFolder = os.path.dirname(path)
+            if not path.endswith('/'): path += '/'
+            self.mediaFolder = path
         dlg.Destroy()
 
     def save_file(self, event):
@@ -222,7 +222,8 @@ class Funky_GUI(wx.Frame):
             )
         if dlg.ShowModal() == wx.ID_OK:
             path = dlg.GetPath()
-            if path.split('.')[-1] == 'mp3': final_path = ac.convert_mp3_to_wav(path,outputpath=os.getcwd()+'/music/'+str(hash(path))+'.wav')
+            if path.split('.')[-1] == 'mp3':
+                final_path = ac.convert_mp3_to_wav(path,outputpath=os.getcwd()+'/music/'+str(hash(path))+'.wav')
             else: final_path = path
             name = path.split('/')[-1].split('.')[0]
             album = path.split('/')[-2]
@@ -290,8 +291,24 @@ class Funky_GUI(wx.Frame):
 
     def search_media_for_file(self, query):
         """return bool of wather or not file is found, if file is found pass it to playlist"""
-        paths = glob.glob("*/*query*")
-        print(paths)
+        print(self.mediaFolder)
+        for tup in os.walk(self.mediaFolder):
+            for mfile in tup[2]:
+                if mfile.endswith('/'): continue
+                song = mfile.split('.')[0]
+                if query not in song: continue
+                print("sucess")
+                album = tup[0].split('/')[-2]
+                TEXT = "Is this the song you where searching for?\nSong: " + song + "\nAlbum: " + album
+                dlg1 = wx.MessageDialog(None,caption="Confirm Download:", message=str(TEXT) ,style=wx.OK|wx.CANCEL|wx.ICON_EXCLAMATION)
+                if dlg1.ShowModal() == wx.ID_OK:
+                    directory = tup[0]
+                    if not directory.endswith('/'): directory += '/'
+                    path = directory+mfile
+                    final_path = ac.convert_mp3_to_wav(path,outputpath=os.getcwd()+'/music/'+str(hash(path))+'.wav')
+                    self.playlist.addSong({'path':final_path,'name':song,'album':album})
+                    dlg1.Destroy()
+                    return True
         return False
 
     def onSetVolume(self, event):
