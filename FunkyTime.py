@@ -255,6 +255,8 @@ class Funky_GUI(wx.Frame):
             path = dlg.GetPath()
             if path.split('.')[-1] == 'mp3':
                 final_path = ac.convert_mp3_to_wav(path,outputpath=os.getcwd()+'/music/'+str(hash(path))+'.wav')
+            if path.split('.')[-1] == 'mp3':
+                final_path = ac.convert_flac_to_wav(path,outputpath=os.getcwd()+'/music/'+str(hash(path))+'.wav')
             else: final_path = path
             name = path.split('/')[-1].split('.')[0]
             album = path.split('/')[-2]
