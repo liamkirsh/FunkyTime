@@ -31,7 +31,8 @@ class Database:
 
     def loadDemo(self):
         if self.exists():
-            self.addSong('German March', 'EdGuy Advantasia', './song.mp3')
+            self.addSong('German March', 'EdGuy Advantasia', '/Users/isak/Projects/FunkyTime/song.wav')
+            self.addSong('Bass Wave', 'EdGuy Advantasia', '/Users/isak/Projects/FunkyTime/bass.wav')
         else:
             raise no_table_ex
 
