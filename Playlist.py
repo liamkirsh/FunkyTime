@@ -25,8 +25,13 @@ class Playlist:
             s = self.ctrl.GetFirstSelected()
             hg_path = self.ctrl.GetItem(itemId=s, col=2).GetText()
             del_list.append(hg_path)
+
             self.db.deleteSong(hg_path)
             self.ctrl.DeleteItem(s)
+            
+            self.size -= 1
+            self.selectSong(self.selected)
+
         print 'Deleted list:', del_list
         return del_list
 
