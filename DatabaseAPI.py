@@ -39,7 +39,16 @@ class Database:
     def addSong(self, song_name, album_name, file_path):
         if self.exists():
             c = self.conn.cursor()
+            self.deleteSong(filePath)
             c.execute('INSERT INTO Playlist (song_name, album_name, file_path) VALUES (?, ?, ?);', (song_name, album_name, file_path))
+            self.conn.commit()
+        else:
+            raise no_table_ex
+
+    def deleteSong(self, file_path):
+        if self.exists():
+            c = self.conn.cursor()
+            c.execute("DELETE FROM Playlist WHERE file_path = ?;", (file_path,))
             self.conn.commit()
         else:
             raise no_table_ex
@@ -48,3 +57,5 @@ class Database:
         if self.exists():
             return list(self.conn.cursor().execute('SELECT * FROM Playlist;'))
         raise no_table_ex
+
+db = Database()
