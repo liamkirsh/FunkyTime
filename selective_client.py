@@ -2,6 +2,7 @@ import requests
 import libtorrent as lt
 import time
 import sys
+import os
 
 ses = lt.session()
 ses.listen_on(6881, 6891)
