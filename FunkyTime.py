@@ -1,4 +1,5 @@
 import wx
+import wx.media
 import Playlist as pl
 import server_requests as sr
 from functools import reduce
@@ -56,6 +57,12 @@ class Funky_GUI(wx.Frame):
 #        self.toolbar0 = wx.ToolBar(self.panel, id=-1)
 
 ####################
+
+        try:
+            self.mediaPlayer = wx.media.MediaCtrl(self.panel, id=-1, style=wx.SIMPLE_BORDER)
+        except NotImplementedError:
+            self.Destroy()
+            raise
 
         self.search_bar = wx.SearchCtrl(self.panel, id=-1, value='enter song or band name', size = (256*self.GUI_RESOLUTION,32), style=wx.TE_PROCESS_ENTER)
         self.Bind(wx.EVT_TEXT_ENTER, self.search_torrents, self.search_bar)
@@ -140,14 +147,16 @@ class Funky_GUI(wx.Frame):
         print('to be cont')
 
     def on_play_button(self,event):
+        current_song = self.playlist.getCurrentSong()
+        if current_song == None: return
         if self.isplaying:
             self.playOrPauseButton.SetBitmapLabel(self.img_play)
             self.isplaying=False
+            self.mediaPlayer.Pause()
         else:
             self.playOrPauseButton.SetBitmapLabel(self.img_pause)
-            self.playSong(self.playlist.getCurrentSong()) ##
             self.isplaying=True
-        return #xxx
+            self.playSong(current_song)
 
     def on_next_button(self,event):
         self.playSong(self.playlist.getNextSong()) ##
@@ -166,25 +175,44 @@ class Funky_GUI(wx.Frame):
     def button_download(self,event):
         return #xxx
 
-    def playSong(file):
-        CHUNK = 1024
-        wf = wave.open(file, 'rb')
-        p = pyaudio.PyAudio()
-        stream = p.open(format=p.get_format_from_width(wf.getsampwidth()),
-                        channels=wf.getnchannels(),
-                        rate=wf.getframerate(),
-                        output=True)
+#    def onBrowse(self, event):
+#        """
+#        Opens file dialog to browse for music
+#        """
+#        wildcard = "MP3 (*.mp3)|*.mp3|"     \
+#                   "WAV (*.wav)|*.wav"
+#        dlg = wx.FileDialog(
+#            self, message="Choose a file",
+#            defaultDir=self.currentFolder, 
+#            defaultFile="",
+#            wildcard=wildcard,
+#            style=wx.OPEN | wx.CHANGE_DIR
+#            )
+#        if dlg.ShowModal() == wx.ID_OK:
+#            path = dlg.GetPath()
+#            self.currentFolder = os.path.dirname(path)
+#            self.loadMusic(path)
+#        dlg.Destroy()
 
-        data = wf.readframes(CHUNK)
-
-        while data != '':
-            stream.write(data)
-            data = wf.readframes(CHUNK)
-
-        stream.stop_stream()
-        stream.close()
-        p.terminate()
-        
+    def playSong(current_song):
+        try:
+            if self.mediaPlayer.Play():
+                wx.MessageBox("Unable to Play media : Unsupported format?",
+                              "ERROR",
+                              wx.ICON_ERROR | wx.OK)
+            else:
+                self.mediaPlayer.SetInitialSize()
+                self.GetSizer().Layout()
+                self.sliderctrl.SetRange(0, self.mediaPlayer.Length())
+        except:
+            if not self.mediaPlayer.Load(current_song):
+                wx.MessageBox("Unable to load %s: Unsupported format?" % current_song,
+                              "ERROR",
+                              wx.ICON_ERROR | wx.OK)
+            else:
+                self.mediaPlayer.SetInitialSize()
+                self.GetSizer().Layout()
+                self.sliderctrl.SetRange(0, self.mediaPlayer.Length())
 
 ###########################
 

@@ -6,9 +6,7 @@ server_name = "http://162.243.156.22"
 def get_metadata_from_server(QUERY):
     #get spotify info from server
     payload = { 'q' : QUERY }
-    print(QUERY)
     r = requests.get(server_name + '/lookup', params=payload)
-    print(r.json())
     return r.json()
 
 def init_download_on_server(JSON):
