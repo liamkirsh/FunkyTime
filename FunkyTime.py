@@ -113,6 +113,7 @@ class Funky_GUI(wx.Frame):
         self.Bind(wx.EVT_BUTTON, self.on_repeat_button, self.repeatButton)
 
         self.listctrl = self.playlist.getListCtrl(self.panel,32*5+256*self.GUI_RESOLUTION+5*10,256*self.GUI_RESOLUTION)
+        self.playlist.callback = self.playSong
 
         self.sliderctrl = wx.Slider(self.panel, id=-1, minValue=0, maxValue=60, size=(32*5+256*self.GUI_RESOLUTION+5*10,40*self.GUI_RESOLUTION), style=wx.SL_HORIZONTAL | wx.SL_LABELS )
         self.slidertime = wx.StaticText(self.panel)

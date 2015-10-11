@@ -45,7 +45,7 @@ class Playlist:
     def onDoubleClick(self, evt):
         #print 'DOUBLE CLICK:', evt
         self.selectSong(self.highlighted)
-        self.callback()
+        self.callback(self.getCurrentSong())
     
     def getListCtrl(self,panel,w,h):
         ctrl = wx.ListCtrl(panel, id=-1, size=(w,h), style=wx.LC_REPORT)
