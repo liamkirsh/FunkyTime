@@ -18,11 +18,13 @@ if not os.path.exists('downloads'):
 headers = {'user-agent': 'Wget/1.15 (linux-gnu)'}
 r = requests.get(sys.argv[1], headers=headers)
 #f = urllib2.urlopen(sys.argv[1])
-tFile = os.path.join('torrents', sys.argv[1].split('/')[-1])
-with open(tFile, 'wb') as fd:
+tFile = sys.argv[1].split('/')[-1]
+filename = os.path.join('torrents', tFile)
+with open(filename, 'wb') as fd:
 	fd.write(r.content)
 
-info = lt.torrent_info(tFile)
+#filename=sys.argv[1]
+info = lt.torrent_info(filename)
 REQUIRED = sys.argv[2]
 #selection
 admitted = []

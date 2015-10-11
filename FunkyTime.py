@@ -1,14 +1,14 @@
 import wx
+import wx.media
 import Playlist as pl
 import server_requests as sr
 from functools import reduce
-import sndhdr
-from pydub import AudioSegment
-import pyaudio
-import wave
-import time
 import requests
 import sys
+import pdb
+import pyaudio 
+import time
+import wave
 
 class Funky_GUI(wx.Frame):
 
@@ -27,6 +27,7 @@ class Funky_GUI(wx.Frame):
         """ """
         self.CreateMenuBar()
         self.playlist = pl.Playlist()
+        self.pyaudio = pyaudio.PyAudio()
         self.CreateUI()
 
     def CreateMenuBar(self):
@@ -53,9 +54,15 @@ class Funky_GUI(wx.Frame):
 
     def CreateUI(self):
         """ """
-#        self.toolbar0 = wx.ToolBar(self.panel, id=-1)
+        self.toolbar0 = wx.ToolBar(self.panel, id=-1)
 
 ####################
+
+        try:
+            self.mediaPlayer = wx.media.MediaCtrl(self.panel, id=-1, style=wx.SIMPLE_BORDER)
+        except NotImplementedError:
+            self.Destroy()
+            raise
 
         self.search_bar = wx.SearchCtrl(self.panel, id=-1, value='enter song or band name', size = (256*self.GUI_RESOLUTION,32), style=wx.TE_PROCESS_ENTER)
         self.Bind(wx.EVT_TEXT_ENTER, self.search_torrents, self.search_bar)
@@ -86,7 +93,11 @@ class Funky_GUI(wx.Frame):
         self.listctrl = self.playlist.getListCtrl(self.panel,32*5+256*self.GUI_RESOLUTION+5*10,256*self.GUI_RESOLUTION)
 
         self.sliderctrl = wx.Slider(self.panel, id=-1, minValue=0, maxValue=60, size=(32*5+256*self.GUI_RESOLUTION+5*10,40*self.GUI_RESOLUTION), style=wx.SL_HORIZONTAL | wx.SL_LABELS )
-
+        self.slidertime = wx.StaticText(self.panel)
+        self.Bind(wx.EVT_SLIDER, self.onSeek, self.sliderctrl)
+        self.timer = wx.Timer(self)
+        self.Bind(wx.EVT_TIMER, self.onTimer)
+        self.timer.Start(100)
 
         ######################SIZERS AND STUFF#######################
 #        for var in ('playOrPauseButton','prevButton','nextButton','stopButton','repeatButton','search_bar'):
@@ -115,9 +126,18 @@ class Funky_GUI(wx.Frame):
         self.panel.SetSizer(vbox0)
         vbox0.Fit(self)
 
+#######################
+# SLIDER STUFF
+#######################
+    def onSeek(self, evt):
+        offset = self.sliderctrl.GetValue()
+        self.mediaPlayer.Seek(offset)
+
+    def onTimer(self, evt):
+        offset = self.mediaPlayer.Tell()
+        self.sliderctrl.SetValue(offset)
 
 #######################
-
 
     def search_torrents(self,event):
         query=self.search_bar.GetValue()
@@ -140,21 +160,24 @@ class Funky_GUI(wx.Frame):
         print('to be cont')
 
     def on_play_button(self,event):
-        if self.isplaying:
-            self.playOrPauseButton.SetBitmapLabel(self.img_play)
-            self.isplaying=False
-        else:
-            self.playOrPauseButton.SetBitmapLabel(self.img_pause)
-            self.playSong(self.playlist.getCurrentSong()) ##
-            self.isplaying=True
-        return #xxx
+        self.playSong("./CUNT.wav")
+#        current_song = self.playlist.getCurrentSong()
+#        if current_song == None: return
+#        if self.isplaying:
+#            self.playOrPauseButton.SetBitmapLabel(self.img_play)
+#            self.isplaying=False
+##            self.mediaPlayer.Pause()
+#        else:
+#            self.playOrPauseButton.SetBitmapLabel(self.img_pause)
+#            self.isplaying=True
+#            self.playSong(current_song)
+
 
     def on_next_button(self,event):
         self.playSong(self.playlist.getNextSong()) ##
         return 
 
     def on_prev_button(self,event):
-        self.AudioSegment.from_file(self.playlist.getPrevSong(), format= sndhdr.what(pl.getPrevSong())[0]) ##
         return 
 
     def on_stop_button(self,event):
@@ -166,25 +189,57 @@ class Funky_GUI(wx.Frame):
     def button_download(self,event):
         return #xxx
 
-    def playSong(file):
-        CHUNK = 1024
-        wf = wave.open(file, 'rb')
+#    def onBrowse(self, event):
+#        """
+#        Opens file dialog to browse for music
+#        """
+#        wildcard = "MP3 (*.mp3)|*.mp3|"     \
+#                   "WAV (*.wav)|*.wav"
+#        dlg = wx.FileDialog(
+#            self, message="Choose a file",
+#            defaultDir=self.currentFolder, 
+#            defaultFile="",
+#            wildcard=wildcard,
+#            style=wx.OPEN | wx.CHANGE_DIR
+#            )
+#        if dlg.ShowModal() == wx.ID_OK:
+#            path = dlg.GetPath()
+#            self.currentFolder = os.path.dirname(path)
+#            self.loadMusic(path)
+#        dlg.Destroy()
+
+#    def playSong(self, current_song):
+#        if not self.mediaPlayer.Play():
+#            if not self.mediaPlayer.Load(current_song):
+#                wx.MessageBox("Unable to load %s: Unsupported format?" % current_song,
+#                              "ERROR",
+#                              wx.ICON_ERROR | wx.OK)
+#                return
+#        self.mediaPlayer.SetInitialSize()
+#        self.GetSizer().Layout()
+#        self.sliderctrl.SetRange(0, self.mediaPlayer.Length())
+
+    def playSong(self,song):
+        wf = wave.open(song, 'rb')
         p = pyaudio.PyAudio()
+        def callback(in_data, frame_count, time_info, status):
+            data = wf.readframes(frame_count)
+            return (data, pyaudio.paContinue)
+
         stream = p.open(format=p.get_format_from_width(wf.getsampwidth()),
                         channels=wf.getnchannels(),
                         rate=wf.getframerate(),
-                        output=True)
+                        output=True,
+                        stream_callback=callback)
+        stream.start_stream()
 
-        data = wf.readframes(CHUNK)
-
-        while data != '':
-            stream.write(data)
-            data = wf.readframes(CHUNK)
+        while stream.is_active():
+            time.sleep(0.1)
 
         stream.stop_stream()
         stream.close()
+        wf.close()
         p.terminate()
-        
 
 ###########################
 

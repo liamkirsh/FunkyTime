@@ -54,6 +54,11 @@ class Playlist:
         return ctrl
 
     def selectSong(self, index):
+        if self.size <= 0:
+            self.size = -1
+            self.selected = -1
+            return
+
         if index < 0:
             index = self.size - 1
         if index >= self.size:
@@ -62,11 +67,16 @@ class Playlist:
         if self.selected >= 0:
             self.ctrl.SetItemBackgroundColour(self.selected, self.nbg)
 
-        self.ctrl.SetItemBackgroundColour(index, self.hbg)
         self.selected = index
 
+        if self.selected >= 0:
+            self.ctrl.SetItemBackgroundColour(index, self.hbg)
+
+
     def getCurrentSong(self):
-        return self.ctrl.GetItem(self.selected, 2)
+        if self.selected < 0:
+            return None
+        return self.ctrl.GetItemText(self.selected)
 
     def getNextSong(self):
         self.selectSong(self.selected + 1)
