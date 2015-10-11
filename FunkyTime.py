@@ -131,10 +131,12 @@ class Funky_GUI(wx.Frame):
         TEXT=meta_data"""  #try to see if this works
         query=self.search_bar.GetValue()
         responce = sr.ping(query)
-        if responce:
-            TEXT = sr.get_metadata_from_server(query)
-        else:
-            print("server not up: " + responce); return
+#        if responce:
+        TEXT,ERROR = sr.get_metadata_from_server(query)
+        print(ERROR)
+        if ERROR != 200: print("server not up: " + str(ERROR)); return
+#        else:
+#            print("server not up: " + responce); return
         dlg1 = wx.MessageDialog(None,caption="Conferm Download:", message=str(TEXT) ,style=wx.OK|wx.CANCEL|wx.ICON_EXCLAMATION)
         if dlg1.ShowModal() == wx.ID_OK:
             print('you hit okay')

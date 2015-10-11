@@ -11,9 +11,9 @@ def get_metadata_from_server(QUERY):
     #get spotify info from server
     payload = { 'q' : QUERY }
     print(QUERY)
-    r = requests.get(server_name + '/lookup?q=', params=payload)
+    r = requests.get(server_name + '/lookup', params=payload)
     print(r.json())
-    return r.json()
+    return r.json(),r.error()
 
 def init_download_on_server(JSON):
     #tell server to download the query
