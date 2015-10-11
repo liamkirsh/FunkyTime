@@ -1,6 +1,6 @@
 import wx
 import Playlist as pl
-import server_requests as ut
+import server_requests as sr
 from functools import reduce
 import sndhdr
 from pydub import AudioSegment
@@ -83,7 +83,7 @@ class Funky_GUI(wx.Frame):
         self.Bind(wx.EVT_BUTTON, self.on_repeat_button, self.repeatButton)
 
         self.listctrl = self.playlist.getListCtrl(self.panel,32*5+256*self.GUI_RESOLUTION+5*10,256*self.GUI_RESOLUTION)
-        
+
         self.sliderctrl = wx.Slider(self.panel, id=-1, minValue=0, maxValue=60, size=(32*5+256*self.GUI_RESOLUTION+5*10,40*self.GUI_RESOLUTION), style=wx.SL_HORIZONTAL | wx.SL_LABELS )
 
 
@@ -123,13 +123,18 @@ class Funky_GUI(wx.Frame):
         if len(search_list) > 1:
             query = "http://162.243.156.22/lookup?q="+reduce(lambda x,y: x+'+'+y,search_list)
         else: query = search_list[0]
-        responce = ut.ping(query)
+        responce = sr.ping(query)
         if responce:
-            meta_data = ut.query_server(query)
+            meta_data = sr.get_metadata_from_server(self.search_bar.GetValue())
         else:
             print("server not up: " + responce); return
         TEXT=meta_data"""  #try to see if this works
-        TEXT = ut.get_metadata_from_server(self.search_bar.GetValue())
+        query=self.search_bar.GetValue()
+        responce = sr.ping(query)
+        if responce:
+            TEXT = sr.get_metadata_from_server(query)
+        else:
+            print("server not up: " + responce); return
         dlg1 = wx.MessageDialog(None,caption="Conferm Download:", message=str(TEXT) ,style=wx.OK|wx.CANCEL|wx.ICON_EXCLAMATION)
         if dlg1.ShowModal() == wx.ID_OK:
             print('you hit okay')
