@@ -19,7 +19,7 @@ def get_metadata_from_server(query):
 def init_download_on_server(JSON):
     #tell server to download the query
     payload = json.loads(JSON)
-    r = requests.post(server_name + '/initiate', data=payload)
+    r = requests.post(server_name + '/initiate', data=json.dumps(payload), headers={'content-type':'application/json'})
     #print r.text
     return r.text #server returns the hash of the json. keep it safe
 

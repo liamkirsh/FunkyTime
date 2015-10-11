@@ -202,11 +202,8 @@ class Funky_GUI(wx.Frame):
             dlg1.Destroy()
         else: return
         data = None
-        print(download_hash)
         while data is None:
-            print('polling')
             data,ctype = sr.poll_server(download_hash)
-        print(ctype)
 
     def onBrowse(self, event):
         """
