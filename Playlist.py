@@ -20,9 +20,10 @@ class Playlist:
             self.db.loadDemo()
 
     def removeSelected(self):
-        db.deleteSong(hg_path)
-        self.highlighted = -1
         hg_path = self.ctrl.GetItem(itemId=self.selected, col=2).GetText()
+        self.ctrl.DeleteItem(self.highlighted)
+        self.db.deleteSong(hg_path)
+        self.highlighted = -1
 
     def addSong(self, song):
         name = song['name']

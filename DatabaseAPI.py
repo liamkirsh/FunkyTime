@@ -39,7 +39,7 @@ class Database:
     def addSong(self, song_name, album_name, file_path):
         if self.exists():
             c = self.conn.cursor()
-            self.deleteSong(filePath)
+            self.deleteSong(file_path)
             c.execute('INSERT INTO Playlist (song_name, album_name, file_path) VALUES (?, ?, ?);', (song_name, album_name, file_path))
             self.conn.commit()
         else:
