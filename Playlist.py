@@ -40,6 +40,9 @@ class Playlist:
             self.size -= 1
             self.selectSong(self.selected)
 
+        if self.size <= 0:
+            self.size = -1
+
         print 'Deleted list:', del_list
         return del_list
 
@@ -126,8 +129,8 @@ class Playlist:
     def getCurrentSong(self):
         if self.selected < 0:
             return None
-        #result = self.ctrl.GetItem(itemId=self.selected, col=3).GetText()
-        result = self.ctrl.GetItem(self.selected, 3).GetText()
+        result = self.ctrl.GetItem(itemId=self.selected, col=3).GetText()
+        #result = self.ctrl.GetItem(self.selected, 3).GetText()
         return result
 
     def getNextSong(self):
