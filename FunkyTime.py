@@ -79,6 +79,9 @@ class Funky_GUI(wx.Frame):
         self.Bind(wx.EVT_BUTTON, self.on_repeat_button, self.repeatButton)
 
         self.listctrl = self.playlist.getListCtrl(self.panel,32*5+256*self.GUI_RESOLUTION+5*10,256*self.GUI_RESOLUTION)
+        
+        self.sliderctrl = wx.Slider(self.panel, id=-1, minValue=0, maxValue=60, size=(32*5+256*self.GUI_RESOLUTION+5*10,40*self.GUI_RESOLUTION), style=wx.SL_HORIZONTAL | wx.SL_LABELS )
+
 
         ######################SIZERS AND STUFF#######################
 #        for var in ('playOrPauseButton','prevButton','nextButton','stopButton','repeatButton','search_bar'):
@@ -102,6 +105,7 @@ class Funky_GUI(wx.Frame):
         vbox0 = wx.BoxSizer(wx.VERTICAL)
         vbox0.Add(hbox0)
         vbox0.Add(self.listctrl)
+        vbox0.Add(self.sliderctrl)
 
         self.panel.SetSizer(vbox0)
         vbox0.Fit(self)
