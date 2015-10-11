@@ -31,8 +31,7 @@ class Database:
 
     def loadDemo(self):
         if self.exists():
-            for i in range(1, 5):
-                self.addSong('Beet 5.' + str(i), 'Beet Symp', './song.mp3')
+            self.addSong('German March', 'EdGuy Advantasia', './song.mp3')
         else:
             raise no_table_ex
 
