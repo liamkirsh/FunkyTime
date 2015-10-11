@@ -32,7 +32,7 @@ class Database:
     def loadDemo(self):
         if self.exists():
             for i in range(1, 5):
-                self.addSong('Beet 5.' + str(i), 'Beet Symp', './beet_5_1.wav')
+                self.addSong('Beet 5.' + str(i), 'Beet Symp', './song.mp3')
         else:
             raise no_table_ex
 

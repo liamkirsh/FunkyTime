@@ -208,7 +208,8 @@ class Funky_GUI(wx.Frame):
 #            self.loadMusic(path)
 #        dlg.Destroy()
 
-    def playSong(current_song):
+    def playSong(self, current_song):
+        pdb.set_trace()
         try:
             if self.mediaPlayer.Play():
                 wx.MessageBox("Unable to Play media : Unsupported format?",
