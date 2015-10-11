@@ -5,9 +5,18 @@ import time
 import sys
 import os
 import shutil
+import re
 
 ses = lt.session()
 ses.listen_on(6881, 6891)
+
+def audio_match(title, f):
+	extension = f.split(".")[-1]
+	if extension in ["mp3", "flac", "m4a", "wav", "wma"]:
+		f = f[:-1]
+	title = re.sub(r"\W+", "", title)
+	f = re.sub(r"\W+", "", f)
+	return (title.lower() in f.lower()) or (f.lower() in title.lower())
 
 # First, accept URL to torrent file as a param and grab it
 if not os.path.exists('torrents'):
@@ -34,7 +43,7 @@ admitted_fnames = []
 i=0
 done_with_it = False
 for f in info.files():
-    if REQUIRED in f.path:
+    if audio_match(REQUIRED, f.path):
 	if not done_with_it:
         	admitted.append(i)
         	admitted_fnames.append(f.path)
