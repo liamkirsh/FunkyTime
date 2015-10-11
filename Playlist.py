@@ -96,7 +96,7 @@ class Playlist:
     def getCurrentSong(self):
         if self.selected < 0:
             return None
-        result = self.ctrl.GetItemText(self.selected)
+        result = self.ctrl.GetItem(itemId=self.selected, col=2).GetText()
         print 'returning', result
         return result
 
