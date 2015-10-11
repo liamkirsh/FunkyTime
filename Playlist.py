@@ -97,7 +97,7 @@ class Playlist:
         if self.selected < 0:
             return None
         result = self.ctrl.GetItem(itemId=self.selected, col=2).GetText()
-        print 'returning', result
+        #print 'returning', result
         return result
 
     def getNextSong(self):

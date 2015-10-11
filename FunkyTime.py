@@ -9,6 +9,10 @@ import requests
 import sys,os
 import pdb
 
+STOP = -1
+PAUSE = 0
+PLAY = 1
+
 class Funky_GUI(wx.Frame):
 
     def __init__(self):
@@ -96,7 +100,7 @@ class Funky_GUI(wx.Frame):
         img_stop = wx.Bitmap('img/stop_button.jpg', type=wx.BITMAP_TYPE_JPEG)
         img_repeat = wx.Bitmap('img/repeat_button.jpg', type=wx.BITMAP_TYPE_JPEG)
 
-        self.isplaying=False
+        self.isplaying=STOP
         self.playOrPauseButton = wx.BitmapButton(self.panel, id=-1, bitmap=self.img_play, size=(32,32))
         self.Bind(wx.EVT_BUTTON, self.on_play_button, self.playOrPauseButton)
 
@@ -113,7 +117,7 @@ class Funky_GUI(wx.Frame):
         self.Bind(wx.EVT_BUTTON, self.on_repeat_button, self.repeatButton)
 
         self.listctrl = self.playlist.getListCtrl(self.panel,32*5+256*self.GUI_RESOLUTION+5*10,256*self.GUI_RESOLUTION)
-        self.playlist.callback = self.playSong
+        self.playlist.callback = self.on_double_click
 
         self.sliderctrl = wx.Slider(self.panel, id=-1, minValue=0, maxValue=60, size=(32*5+256*self.GUI_RESOLUTION+5*10,40*self.GUI_RESOLUTION), style=wx.SL_HORIZONTAL | wx.SL_LABELS )
         self.slidertime = wx.StaticText(self.panel)
@@ -231,16 +235,25 @@ class Funky_GUI(wx.Frame):
     def open_settings_menu(self,event):
         print('to be cont')
 
+    def on_double_click(self, song):
+        self.isplaying=PLAY
+        self.playOrPauseButton.SetBitmapLabel(self.img_pause)
+        self.playSong(song)
+
     def on_play_button(self,event):
         current_song = self.playlist.getCurrentSong()
         if current_song == None: return
-        if self.isplaying:
+        if self.isplaying == PLAY:
             self.playOrPauseButton.SetBitmapLabel(self.img_play)
-            self.isplaying=False
+            self.isplaying=PAUSE
             self.mediaPlayer.Pause()
+        elif self.isplaying == PAUSE:
+            self.playOrPauseButton.SetBitmapLabel(self.img_pause)
+            self.isplaying=PLAY
+            self.mediaPlayer.Play()
         else:
             self.playOrPauseButton.SetBitmapLabel(self.img_pause)
-            self.isplaying=True
+            self.isplaying=PLAY
             self.playSong(current_song)
 
 
@@ -251,7 +264,9 @@ class Funky_GUI(wx.Frame):
         self.playSong(self.playlist.getPrevSong())
 
     def on_stop_button(self,event):
-        return
+        self.isplaying=STOP
+        self.playOrPauseButton.SetBitmapLabel(self.img_play)
+        self.mediaPlayer.Stop()
 
     def on_repeat_button(self,event):
         return
