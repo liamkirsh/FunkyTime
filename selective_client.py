@@ -4,6 +4,7 @@ import libtorrent as lt
 import time
 import sys
 import os
+import shutil
 
 ses = lt.session()
 ses.listen_on(6881, 6891)
@@ -26,14 +27,20 @@ with open(filename, 'wb') as fd:
 #filename=sys.argv[1]
 info = lt.torrent_info(filename)
 REQUIRED = sys.argv[2]
+the_hash = sys.argv[3]
 #selection
 admitted = []
+admitted_fnames = []
 i=0
 for f in info.files():
     if REQUIRED in f.path:
         admitted.append(i)
+        admitted_fnames.append(f.path)
         print f.path
-    i += 1
+        i += 1
+        break
+    else:
+        i += 1
 MAX_I = i
 #####This section maintains a list of permitted filenames to download
 
@@ -70,3 +77,12 @@ while (not h.is_seed()):
 	time.sleep(1)
 
 print h.name(), 'complete'
+
+if not os.path.exists('outbox'):
+    os.makedirs('outbox')
+dump_dir = os.path.join('downloads', the_hash)
+if not os.path.exists(dump_dir):
+    os.makedirs(dump_dir)
+for fname in admitted_fnames:
+    shutil.move(fname, dump_dir)
+shutil.move(dump_dir, 'outbox')

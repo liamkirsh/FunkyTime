@@ -17,11 +17,17 @@ def init_download_on_server(JSON):
     payload = json.loads(JSON)
     r = requests.post(server_name + '/initiate', json=payload)
     #print r.text
-    #return r.text
-    return
+    return r.text #server returns the hash of the json. keep it safe
 
-def poll_server(QUERY):
-    pass #TODO
+def poll_server(the_hash):
+    payload = { 'hash' : the_hash }
+    r = requests.get(server_name + '/poll', params=payload)
+    data = r.content
+    ok = data[0]
+    if not ok:
+        return None
+    else:
+        return data[1:]  #this will return None if no response, and a bitstream if yes response
 
 if __name__ == '__main__':
     init_download_on_server('{"album": "Good Girl Gone Bad: Reloaded", "thumb": "https://i.scdn.co/image/b1244db3be7cb3c1fd05555c2e53dc5d2b94176d", "title": "Umbrella", "artist": "Rihanna"}')
