@@ -1,4 +1,4 @@
-
+import requests
 import libtorrent as lt
 import time
 import sys
@@ -6,7 +6,17 @@ import sys
 ses = lt.session()
 ses.listen_on(6881, 6891)
 
-info = lt.torrent_info(sys.argv[1])
+# First, accept URL to torrent file as a param and grab it
+if not os.path.exists('torrents'):
+    os.makedirs('torrents')
+r = requests.get(sys.argv[1])
+tFile = sys.argv[1].split('/')[-1]
+with open(tFile, 'wb') as fd:
+    for chunk in r.iter_content(chunk_size=1024):
+        if chunk:
+            fd.write(chunk)
+
+info = lt.torrent_info(tFile)
 REQUIRED = sys.argv[2]
 #selection
 admitted = []
