@@ -139,7 +139,7 @@ class Playlist:
 
 class StarredListCtrl(wx.ListCtrl, lc.CheckListCtrlMixin):
 
-    def __init__(self, parent, size):
+    def __init__(self, parent, size, callback):
         wx.ListCtrl.__init__(self, parent, -1, size, style=wx.LC_REPORT)
 
         saved = wx.Bitmap('img/yellowstar.png', type=wx.BITMAP_TYPE_PNG)
@@ -147,8 +147,7 @@ class StarredListCtrl(wx.ListCtrl, lc.CheckListCtrlMixin):
 
         lc.CheckListCtrlMixin.__init__(self, check_image=saved, uncheck_image=notsaved, imgsz=(16,16))
 
+        self.callback = callback
+
     def OnCheckItem(self, index, flag):
-        if flag:
-            print 'Checked.'
-        else:
-            print 'Unchecked.'
+        self.callback(index, flag)
