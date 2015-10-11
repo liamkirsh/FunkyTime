@@ -97,7 +97,7 @@ class Funky_GUI(wx.Frame):
             self.Destroy()
             raise
 
-        self.search_bar = wx.SearchCtrl(self.panel, id=-1, value='enter song or band name', size = (256*self.GUI_RESOLUTION,32), style=wx.TE_PROCESS_ENTER)
+        self.search_bar = wx.TextCtrl(self.panel, id=-1, value='enter song or band name', size = (256*self.GUI_RESOLUTION,32), style=wx.TE_PROCESS_ENTER)
         self.Bind(wx.EVT_TEXT_ENTER, self.search_torrents, self.search_bar)
 
         self.img_play = wx.Bitmap('img/play_button.jpg',type=wx.BITMAP_TYPE_JPEG)
@@ -339,7 +339,7 @@ class Funky_GUI(wx.Frame):
 
     def onSetVolume(self, event):
         if (self.volumectrl.GetValue()>0 & self.volumectrl.GetValue()<100):
-            if self.volchange ==0:
+            if self.volchange==0:
                 self.currentVolume = self.volumectrl.GetValue()
                 print "setting volume to: %s" % int(self.currentVolume)
 #                self.mediaPlayer.SetVolume((self.currentVolume)/100)
