@@ -21,7 +21,7 @@ class Funky_GUI(wx.Frame):
         r1=dw/1210.
         r2=dw/640.
         self.GUI_RESOLUTION=min(r1,r2,1.3)
-        self.currentFolder = os.getcwd()
+        self.mediaFolder = os.getcwd()
         wx.Frame.__init__(self, None, title="Funky Time", size=(700*self.GUI_RESOLUTION,450*self.GUI_RESOLUTION))
         self.Bind(wx.EVT_CLOSE, self.close_app)
         self.panel = wx.Panel(self,-1,size=(700*self.GUI_RESOLUTION,450*self.GUI_RESOLUTION))
@@ -169,7 +169,7 @@ class Funky_GUI(wx.Frame):
 
     def search_torrents(self,event):
         query=self.search_bar.GetValue()
-        if search_media_for_file(query): return
+        if self.search_media_for_file(query): return
         try:
             TEXT = sr.get_metadata_from_server(query)
         except(requests.exceptions.RequestException):
@@ -185,16 +185,11 @@ class Funky_GUI(wx.Frame):
         Opens file dialog to browse for music
         """
         wildcard = "/"
-        dlg = wx.FileDialog(
-            self, message="Choose a Directory",
-            defaultDir=self.currentFolder, 
-            defaultFile="",
-            wildcard=wildcard,
-            style=wx.OPEN 
-            )
+        currentDirectory=os.getcwd()
+        dlg = wx.DirDialog(self.panel, "choose media directory:",defaultPath = currentDirectory ,style=wx.DD_DEFAULT_STYLE | wx.DD_NEW_DIR_BUTTON | wx.DD_CHANGE_DIR)
         if dlg.ShowModal() == wx.ID_OK:
             path = dlg.GetPath()
-            self.currentFolder = os.path.dirname(path)
+            self.mediaFolder = os.path.dirname(path)
         dlg.Destroy()
 
     def save_file(self, event):
@@ -211,14 +206,14 @@ class Funky_GUI(wx.Frame):
                    "WAV (*.wav)|*.wav"
         dlg = wx.FileDialog(
             self, message="Choose a file",
-            defaultDir=self.currentFolder, 
+            defaultDir=self.mediaFolder, 
             defaultFile="",
             wildcard=wildcard,
             style=wx.OPEN | wx.CHANGE_DIR
             )
         if dlg.ShowModal() == wx.ID_OK:
             path = dlg.GetPath()
-            if path.split('.')[-1] == 'mp3': final_path = ac.convert_mp3_to_wav(path)
+            if path.split('.')[-1] == 'mp3': final_path = ac.convert_mp3_to_wav(path,outputpath=os.getcwd()+'/music/'+str(hash(path))+'.wav')
             else: final_path = path
             name = path.split('/')[-1].split('.')[0]
             album = path.split('/')[-2]
@@ -284,9 +279,9 @@ class Funky_GUI(wx.Frame):
                           wx.ICON_ERROR | wx.OK)
         self.sliderctrl.SetRange(0, self.mediaPlayer.Length() // 1000)
 
-    def search_media_for_file(query):
+    def search_media_for_file(self, query):
         """return bool of wather or not file is found, if file is found pass it to playlist"""
-        print(query)
+        
         return False
 
 ###########################
