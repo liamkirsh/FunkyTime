@@ -58,10 +58,16 @@ class Funky_GUI(wx.Frame):
 
 ####################
 
-        backend = wx.media.MEDIABACKEND_QUICKTIME
+        if sys.platform == 'linux2':
+            self.backend = wx.media.MEDIABACKEND_GSTREAMER
+        elif sys.platform == 'darwin':
+            self.backend = wx.media.MEDIABACKEND_QUICKTIME
+        else:
+            self.backend = wx.media.MEDIABACKEND_WMP10
+
         try:
             self.mediaPlayer = wx.media.PreMediaCtrl()
-            ok = self.mediaPlayer.Create(self.panel, szBackend=backend)
+            ok = self.mediaPlayer.Create(self.panel, szBackend=self.backend)
             if not ok:
                 raise NotImplementedError
             self.mediaPlayer.PostCreate(self.mediaPlayer)
