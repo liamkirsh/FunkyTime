@@ -61,7 +61,7 @@ class Funky_GUI(wx.Frame):
         m_volUp = menu_setting.Append(-1, "&Increase Volume\tf9", "")
         self.Bind(wx.EVT_MENU, self.IncreaseVol, m_volUp)
 
-        m_volDown = menu_setting.Append(-1, "&Increase Volume\tf8", "")
+        m_volDown = menu_setting.Append(-1, "&Decrease Volume\tf8", "")
         self.Bind(wx.EVT_MENU, self.DecreaseVol, m_volDown)
 
         m_setting = menu_setting.Append(-1, "&Setting", "")
@@ -129,12 +129,11 @@ class Funky_GUI(wx.Frame):
         self.sliderctrl = wx.Slider(self.panel, id=-1, minValue=0, maxValue=60, size=(32*5+256*self.GUI_RESOLUTION+5*10,40*self.GUI_RESOLUTION), style=wx.SL_HORIZONTAL | wx.SL_LABELS )
         self.slidertime = wx.StaticText(self.panel)
         self.Bind(wx.EVT_SLIDER, self.onSeek, self.sliderctrl)
-        
-        self.currentVolume = 50
-        self.volchange =0
-        self.volumectrl = wx.Slider(self.panel, size=(32*5+256*self.GUI_RESOLUTION+5*10,40*self.GUI_RESOLUTION),  style=wx.SL_HORIZONTAL | wx.SL_LABELS)
+
+        self.mediaPlayer.SetVolume(.5)
+        self.volumectrl = wx.Slider(self.panel, size=(40*self.GUI_RESOLUTION,40*self.GUI_RESOLUTION), style=wx.SL_VERTICAL | wx.SL_INVERSE | wx.SL_LABELS)
         self.volumectrl.SetRange(0, 100)
-        self.volumectrl.SetValue(self.currentVolume)
+        self.volumectrl.SetValue(50)
         self.Bind(wx.EVT_SLIDER, self.onSetVolume, self.volumectrl)
 
         self.timer = wx.Timer(self)
@@ -160,11 +159,14 @@ class Funky_GUI(wx.Frame):
         hbox0.Add(self.button_sizer, flag=wx.ALIGN_LEFT, border=8)
         hbox0.Add(self.search_sizer, flag=wx.ALIGN_RIGHT, border=8)
 
+        hbox1 = wx.BoxSizer(wx.HORIZONTAL)
+        hbox1.Add(self.sliderctrl)
+        hbox1.Add(self.volumectrl)
+
         vbox0 = wx.BoxSizer(wx.VERTICAL)
         vbox0.Add(hbox0)
         vbox0.Add(self.listctrl)
-        vbox0.Add(self.sliderctrl)
-        vbox0.Add(self.volumectrl)
+        vbox0.Add(hbox1)
         vbox0.Add(self.mediaPlayer)
 
         self.panel.SetSizer(vbox0)
@@ -236,7 +238,7 @@ class Funky_GUI(wx.Frame):
             else: final_path = path
             name = path.split('/')[-1].split('.')[0]
             album = path.split('/')[-2]
-            self.playlist.addSong({'path':final_path,'name':name,'album':album})
+            self.playlist.addSong({'path':final_path,'name':name,'album':album, 'artist':'','thumb':''})
         dlg.Destroy()
 
 ##########################Menu Files##############################
@@ -245,15 +247,17 @@ class Funky_GUI(wx.Frame):
         self.Destroy()
 
     def IncreaseVol(self,event):
-        self.volchange=1
-        self.onSetVolume(-1)
-#        self.volchange=0
+        vi = int(self.volumectrl.GetValue())
+        if vi+1 <= 100: self.volumectrl.SetValue(vi+1)
+        else: self.volumectrl.SetValue(vi)
+        self.onSetVolume(event)
 
 
     def DecreaseVol(self,event):
-        self.volchange=-1
-        self.onSetVolume(-1)
-#        self.volchange=0
+        vi = int(self.volumectrl.GetValue())
+        if vi-1 >= 0: self.volumectrl.SetValue(vi-1)
+        else: self.volumectrl.SetValue(vi)
+        self.onSetVolume(event)
 
 ##########################
     def open_settings_menu(self,event):
@@ -338,20 +342,7 @@ class Funky_GUI(wx.Frame):
         return False
 
     def onSetVolume(self, event):
-        if (self.volumectrl.GetValue()>0 & self.volumectrl.GetValue()<100):
-            if self.volchange==0:
-                self.currentVolume = self.volumectrl.GetValue()
-                print "setting volume to: %s" % int(self.currentVolume)
-#                self.mediaPlayer.SetVolume((self.currentVolume)/100)
-            if self.volchange==1:
-                self.currentVolume = self.volumectrl.GetValue()+3
-                print "setting volume to: %s" % int(self.currentVolume)
-#                self.mediaPlayer.SetVolume((self.currentVolume)/100)
-            if self.volchange==-1:
-                self.currentVolume = self.volumectrl.GetValue()-3
-                print "setting volume to: %s" % int(self.currentVolume)
-#                self.mediaPlayer.SetVolume((self.currentVolume)/100)
-            self.volumectrl.SetValue(self.currentVolume)
+        self.mediaPlayer.SetVolume(float(self.volumectrl.GetValue())/100.)
 
     def shuffle(self, event):
         pass
