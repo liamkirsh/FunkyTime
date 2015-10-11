@@ -242,25 +242,22 @@ class Funky_GUI(wx.Frame):
         """
         Opens file dialog to browse for music
         """
-        wildcard = "MP3 (*.mp3)|*.mp3|"     \
-                   "WAV (*.wav)|*.wav"
+        wildcard = """MP3 (*.mp3)|*.mp3| WAV (*.wav)|*.wav| FLAC (*.flac)|*.flac| ALL (*)|*"""
         dlg = wx.FileDialog(
             self, message="Choose a file",
-            defaultDir=self.mediaFolder, 
+            defaultDir=self.mediaFolder,
             defaultFile="",
             wildcard=wildcard,
             style=wx.OPEN | wx.CHANGE_DIR
             )
         if dlg.ShowModal() == wx.ID_OK:
             path = dlg.GetPath()
-            if path.split('.')[-1] == 'mp3':
-                final_path = ac.convert_mp3_to_wav(path,outputpath=os.getcwd()+'/music/'+str(hash(path))+'.wav')
-            if path.split('.')[-1] == 'mp3':
-                final_path = ac.convert_flac_to_wav(path,outputpath=os.getcwd()+'/music/'+str(hash(path))+'.wav')
+            if path.split('.')[-1] != 'wav':
+                final_path = ac.convert_to_wav(path,outputpath=os.getcwd()+'/music/'+str(hash(path))+'.wav')
             else: final_path = path
             name = path.split('/')[-1].split('.')[0]
             album = path.split('/')[-2]
-            self.playlist.addSong({'path':final_path,'name':name,'album':album, 'artist':'','thumb':''})
+            self.playlist.addSong({'path':final_path,'name':name,'album':album, 'artist':'None','thumb':'None'})
         dlg.Destroy()
 
 ##########################Menu Files##############################
