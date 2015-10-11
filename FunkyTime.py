@@ -4,6 +4,10 @@ import server_requests as ut
 from functools import reduce
 import sndhdr
 from pydub import AudioSegment
+import pyaudio
+import wave
+import time
+import sys
 
 class Funky_GUI(wx.Frame):
 
@@ -145,20 +149,19 @@ class Funky_GUI(wx.Frame):
             self.isplaying=False
         else:
             self.playOrPauseButton.SetBitmapLabel(self.img_pause)
-            self.AudioSegment.from_file(pl.getCurrentSong(), format= sndhdr.what(pl.getCurrentSong())[0]) ##
+            self.playSong(self.playlist.getCurrentSong()) ##
             self.isplaying=True
         return #xxx
 
     def on_next_button(self,event):
-        self.AudioSegment.from_file(pl.getNextSong(), format= sndhdr.what(pl.getNextSong())[0]) ##
-        return #xxx
+        self.playSong(self.playlist.getNextSong()) ##
+        return 
 
     def on_prev_button(self,event):
-        self.AudioSegment.from_file(pl.getPrevSong(), format= sndhdr.what(pl.getPrevSong())[0]) ##
+        self.AudioSegment.from_file(self.playlist.getPrevSong(), format= sndhdr.what(pl.getPrevSong())[0]) ##
         return 
 
     def on_stop_button(self,event):
-        
         return
 
     def on_repeat_button(self,event):
@@ -166,6 +169,26 @@ class Funky_GUI(wx.Frame):
 
     def button_download(self,event):
         return #xxx
+
+    def playSong(file):
+        CHUNK = 1024
+        wf = wave.open(file, 'rb')
+        p = pyaudio.PyAudio()
+        stream = p.open(format=p.get_format_from_width(wf.getsampwidth()),
+                        channels=wf.getnchannels(),
+                        rate=wf.getframerate(),
+                        output=True)
+
+        data = wf.readframes(CHUNK)
+
+        while data != '':
+            stream.write(data)
+            data = wf.readframes(CHUNK)
+
+        stream.stop_stream()
+        stream.close()
+        p.terminate()
+        
 
 ###########################
 
@@ -175,6 +198,7 @@ def __main__():
     app.frame.Center()
     app.frame.Show()
     app.MainLoop()
+
 
 if __name__ == '__main__':
     __main__()
