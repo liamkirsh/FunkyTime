@@ -21,12 +21,12 @@ def init_download_on_server(JSON):
 def poll_server(the_hash):
     payload = { 'hash' : the_hash }
     r = requests.get(server_name + '/poll', params=payload)
+    ctype = r.headers['content-type']
     data = r.content
-    ok = data[0]
-    if not ok:
+    if ctype == 'text/html' and data == 'None':
         return None
     else:
-        return data[1:]  #this will return None if no response, and a bitstream if yes response
+        return data
 
 if __name__ == '__main__':
     init_download_on_server('{"album": "Good Girl Gone Bad: Reloaded", "thumb": "https://i.scdn.co/image/b1244db3be7cb3c1fd05555c2e53dc5d2b94176d", "title": "Umbrella", "artist": "Rihanna"}')
