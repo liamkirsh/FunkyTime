@@ -204,6 +204,18 @@ class Funky_GUI(wx.Frame):
         data = None
         while data is None:
             data,ctype = sr.poll_server(download_hash)
+        if ctype == 'audio/mpeg':
+            fileout = open('music/'+open_meta_data['title']+'.mp3', 'wb')
+            fileout.write(data)
+        if ctype == 'audio/m4a':
+            fileout = open('music/'+open_meta_data['title']+'.m4a', 'wb')
+            fileout.write(data)
+        if ctype == 'audio/x-flac':
+            fileout = open('music/'+open_meta_data['title']+'.flac', 'wb')
+            fileout.write(data)
+        if ctype == 'audio/x-wav':
+            fileout = open('music/'+open_meta_data['title']+'.wav', 'wb')
+            fileout.write(data)
 
     def onBrowse(self, event):
         """
@@ -223,6 +235,7 @@ class Funky_GUI(wx.Frame):
     def delete_file(self, event):
         files_deleted = self.playlist.removeSelected()
         for dfile in files_deleted:
+            if dfile.split('/')[-2] != 'music': continue
             os.remove(dfile)
 
     def add_file(self, event):
@@ -242,6 +255,8 @@ class Funky_GUI(wx.Frame):
             path = dlg.GetPath()
             if path.split('.')[-1] == 'mp3':
                 final_path = ac.convert_mp3_to_wav(path,outputpath=os.getcwd()+'/music/'+str(hash(path))+'.wav')
+            if path.split('.')[-1] == 'mp3':
+                final_path = ac.convert_flac_to_wav(path,outputpath=os.getcwd()+'/music/'+str(hash(path))+'.wav')
             else: final_path = path
             name = path.split('/')[-1].split('.')[0]
             album = path.split('/')[-2]
