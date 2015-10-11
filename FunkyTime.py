@@ -205,14 +205,29 @@ class Funky_GUI(wx.Frame):
         while data is None:
             data,ctype = sr.poll_server(download_hash)
         if ctype == 'audio/mpeg':
-            fileout = open('music/'+open_meta_data['title']+'.mp3', 'wb')
+            filepath = 'music/'+open_meta_data['title']+'.mp3'
+            fileout = open(filepath, 'wb')
             fileout.write(data)
+            finalpath = ac.convert_to_wav(filepath,outputpath=os.getcwd()+'/music/'+str(hash(path))+'.wav')
+            open_meta_data['path'] = finalpath
+            sys.remove(filepath)
+            self.playlist.addSong(open_meta_data)
         if ctype == 'audio/m4a':
-            fileout = open('music/'+open_meta_data['title']+'.m4a', 'wb')
+            filepath = 'music/'+open_meta_data['title']+'.m4a'
+            fileout = open(filepath, 'wb')
             fileout.write(data)
+            finalpath = ac.convert_to_wav(filepath,outputpath=os.getcwd()+'/music/'+str(hash(path))+'.wav')
+            open_meta_data['path'] = finalpath
+            sys.remove(filepath)
+            self.playlist.addSong(open_meta_data)
         if ctype == 'audio/x-flac':
-            fileout = open('music/'+open_meta_data['title']+'.flac', 'wb')
+            filepath='music/'+open_meta_data['title']+'.flac'
+            fileout = open(filepath, 'wb')
             fileout.write(data)
+            finalpath = ac.convert_to_wav(filepath,outputpath=os.getcwd()+'/music/'+str(hash(path))+'.wav')
+            open_meta_data['path'] = finalpath
+            sys.remove(filepath)
+            self.playlist.addSong(open_meta_data)
         if ctype == 'audio/x-wav':
             fileout = open('music/'+open_meta_data['title']+'.wav', 'wb')
             fileout.write(data)
@@ -354,8 +369,8 @@ class Funky_GUI(wx.Frame):
                     directory = tup[0]
                     if not directory.endswith('/'): directory += '/'
                     path = directory+mfile
-                    final_path = ac.convert_mp3_to_wav(path,outputpath=os.getcwd()+'/music/'+str(hash(path))+'.wav')
-                    self.playlist.addSong({'path':final_path,'name':song,'album':album})
+                    final_path = ac.convert_to_wav(path,outputpath=os.getcwd()+'/music/'+str(hash(path))+'.wav')
+                    self.playlist.addSong({'path':final_path,'name':song,'album':album, 'artist':'None','thumb':'None'})
                     dlg1.Destroy()
                     return True
         return False
