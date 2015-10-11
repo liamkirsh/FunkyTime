@@ -246,8 +246,8 @@ class Funky_GUI(wx.Frame):
         self.playOrPauseButton.SetBitmapLabel(self.img_pause)
         self.playSong(song)
 
-    def on_check_song(self, index, flag):
-        print 'Check', index, ',', flag
+    def on_check_song(self, index, flag, file_path):
+        print 'Check', index, ',', flag, ',', file_path
 
     def on_play_button(self,event):
         current_song = self.playlist.getCurrentSong()

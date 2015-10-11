@@ -4,7 +4,7 @@ from wx.lib.mixins import listctrl as lc
 import DatabaseAPI
 import pdb
 
-DEMO = True
+DEMO = False
 
 ### TODO
 ### ADD BOOLEAN CHECK MARK FOR "SAVE" OR "DELETE"
@@ -31,7 +31,7 @@ class Playlist:
         del_list = []
         while self.ctrl.GetFirstSelected() != -1:
             s = self.ctrl.GetFirstSelected()
-            hg_path = self.ctrl.GetItem(itemId=s, col=2).GetText()
+            hg_path = self.ctrl.GetItem(itemId=s, col=3).GetText()
             del_list.append(hg_path)
 
             self.db.deleteSong(hg_path)
@@ -150,4 +150,4 @@ class StarredListCtrl(wx.ListCtrl, lc.CheckListCtrlMixin):
         self.callback = callback
 
     def OnCheckItem(self, index, flag):
-        self.callback(index, flag)
+        self.callback(index, flag, self.GetItem(index,3).GetText())
