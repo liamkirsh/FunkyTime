@@ -64,7 +64,7 @@ class Playlist:
             raise Exception('Out of bounds.')
 
     def getCurrentSong(self):
-        return './Music/beet_5_1.wav'
+        return './FUCK.mp3' ##xxx 
 
     def getNextSong(self):
         return './Music/beet_5_1.wav'
