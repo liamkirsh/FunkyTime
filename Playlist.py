@@ -76,7 +76,7 @@ class Playlist:
     def getCurrentSong(self):
         if self.selected < 0:
             return None
-        return self.ctrl.GetItemText(self.selected, 2)
+        return self.ctrl.GetItemText(self.selected)
 
     def getNextSong(self):
         self.selectSong(self.selected + 1)

@@ -6,6 +6,9 @@ from functools import reduce
 import requests
 import sys
 import pdb
+import pyaudio 
+import time
+import wave
 
 class Funky_GUI(wx.Frame):
 
@@ -24,6 +27,7 @@ class Funky_GUI(wx.Frame):
         """ """
         self.CreateMenuBar()
         self.playlist = pl.Playlist()
+        self.pyaudio = pyaudio.PyAudio()
         self.CreateUI()
 
     def CreateMenuBar(self):
@@ -50,7 +54,7 @@ class Funky_GUI(wx.Frame):
 
     def CreateUI(self):
         """ """
-#        self.toolbar0 = wx.ToolBar(self.panel, id=-1)
+        self.toolbar0 = wx.ToolBar(self.panel, id=-1)
 
 ####################
 
@@ -156,23 +160,24 @@ class Funky_GUI(wx.Frame):
         print('to be cont')
 
     def on_play_button(self,event):
-        current_song = self.playlist.getCurrentSong()
-        if current_song == None: return
-        if self.isplaying:
-            self.playOrPauseButton.SetBitmapLabel(self.img_play)
-            self.isplaying=False
-            self.mediaPlayer.Pause()
-        else:
-            self.playOrPauseButton.SetBitmapLabel(self.img_pause)
-            self.isplaying=True
-            self.playSong(current_song)
+        self.playSong("./CUNT.wav")
+#        current_song = self.playlist.getCurrentSong()
+#        if current_song == None: return
+#        if self.isplaying:
+#            self.playOrPauseButton.SetBitmapLabel(self.img_play)
+#            self.isplaying=False
+##            self.mediaPlayer.Pause()
+#        else:
+#            self.playOrPauseButton.SetBitmapLabel(self.img_pause)
+#            self.isplaying=True
+#            self.playSong(current_song)
+
 
     def on_next_button(self,event):
         self.playSong(self.playlist.getNextSong()) ##
         return 
 
     def on_prev_button(self,event):
-        self.AudioSegment.from_file(self.playlist.getPrevSong(), format= sndhdr.what(pl.getPrevSong())[0]) ##
         return 
 
     def on_stop_button(self,event):
@@ -203,26 +208,38 @@ class Funky_GUI(wx.Frame):
 #            self.loadMusic(path)
 #        dlg.Destroy()
 
-    def playSong(self, current_song):
-        pdb.set_trace()
-        try:
-            if self.mediaPlayer.Play():
-                wx.MessageBox("Unable to Play media : Unsupported format?",
-                              "ERROR",
-                              wx.ICON_ERROR | wx.OK)
-            else:
-                self.mediaPlayer.SetInitialSize()
-                self.GetSizer().Layout()
-                self.sliderctrl.SetRange(0, self.mediaPlayer.Length())
-        except:
-            if not self.mediaPlayer.Load(current_song):
-                wx.MessageBox("Unable to load %s: Unsupported format?" % current_song,
-                              "ERROR",
-                              wx.ICON_ERROR | wx.OK)
-            else:
-                self.mediaPlayer.SetInitialSize()
-                self.GetSizer().Layout()
-                self.sliderctrl.SetRange(0, self.mediaPlayer.Length())
+#    def playSong(self, current_song):
+#        if not self.mediaPlayer.Play():
+#            if not self.mediaPlayer.Load(current_song):
+#                wx.MessageBox("Unable to load %s: Unsupported format?" % current_song,
+#                              "ERROR",
+#                              wx.ICON_ERROR | wx.OK)
+#                return
+#        self.mediaPlayer.SetInitialSize()
+#        self.GetSizer().Layout()
+#        self.sliderctrl.SetRange(0, self.mediaPlayer.Length())
+
+    def playSong(self,song):
+        wf = wave.open(song, 'rb')
+        p = pyaudio.PyAudio()
+        def callback(in_data, frame_count, time_info, status):
+            data = wf.readframes(frame_count)
+            return (data, pyaudio.paContinue)
+
+        stream = p.open(format=p.get_format_from_width(wf.getsampwidth()),
+                        channels=wf.getnchannels(),
+                        rate=wf.getframerate(),
+                        output=True,
+                        stream_callback=callback)
+        stream.start_stream()
+
+        while stream.is_active():
+            time.sleep(0.1)
+
+        stream.stop_stream()
+        stream.close()
+        wf.close()
+        p.terminate()
 
 ###########################
 
