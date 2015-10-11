@@ -40,9 +40,6 @@ class Playlist:
             self.size -= 1
             self.selectSong(self.selected)
 
-        if self.size <= 0:
-            self.size = -1
-
         print 'Deleted list:', del_list
         return del_list
 
@@ -55,11 +52,11 @@ class Playlist:
 
         self.db.addSong(name, artist, album, thumb, path)
 
-        self.size += 1
         self.ctrl.InsertStringItem(self.size, name)
         self.ctrl.SetStringItem(self.size, 1, artist)
         self.ctrl.SetStringItem(self.size, 2, album)
         self.ctrl.SetStringItem(self.size, 3, path)
+        self.size += 1
 
     def onSelectItem(self, evt):
         #print 'Item selected', evt.Item.Id
