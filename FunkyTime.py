@@ -122,6 +122,12 @@ class Funky_GUI(wx.Frame):
         self.sliderctrl = wx.Slider(self.panel, id=-1, minValue=0, maxValue=60, size=(32*5+256*self.GUI_RESOLUTION+5*10,40*self.GUI_RESOLUTION), style=wx.SL_HORIZONTAL | wx.SL_LABELS )
         self.slidertime = wx.StaticText(self.panel)
         self.Bind(wx.EVT_SLIDER, self.onSeek, self.sliderctrl)
+        
+        self.currentVolume = 50
+        #self.volumeCtrl = wx.Slider(self, style=wx.SL_VERTICAL|wx.SL_INVERSE)
+        #self.volumeCtrl.SetRange(0, 100)
+        #self.volumeCtrl.SetValue(self.currentVolume)
+        #self.volumeCtrl.Bind(wx.EVT_SLIDER, self.onSetVolume)
 
         self.timer = wx.Timer(self)
         self.Bind(wx.EVT_TIMER, self.onTimer)
@@ -141,6 +147,7 @@ class Funky_GUI(wx.Frame):
         self.button_sizer.Add(self.stopButton, 0, wx.LEFT, 5)
         self.button_sizer.Add(self.repeatButton, 0, wx.LEFT, 5)
         self.search_sizer.Add(self.search_bar, 0, wx.LEFT, 5)
+        #self.search_sizer.Add(self.volumeCtrl, 0, wx.LEFT, 5)
 
         hbox0 = wx.BoxSizer(wx.HORIZONTAL)
         hbox0.Add(self.button_sizer, flag=wx.ALIGN_LEFT, border=8)
@@ -196,7 +203,7 @@ class Funky_GUI(wx.Frame):
         pass
 
     def delete_file(self, event):
-        pass
+        self.playlist.removeSelected()
 
     def add_file(self, event):
         """
@@ -283,6 +290,13 @@ class Funky_GUI(wx.Frame):
         """return bool of wather or not file is found, if file is found pass it to playlist"""
         
         return False
+
+    def onSetVolume(self, event):
+        #self.currentVolume = self.volumeCtrl.GetValue()
+        #print "setting volume to: %s" % int(self.currentVolume)
+        #self.mediaPlayer.SetVolume(self.currentVolume)
+        pass
+ 
 
 ###########################
 
