@@ -44,3 +44,6 @@ while not here_yet:
 #enjoy the music
 play(audio)
 """
+
+if __name__ == '__main__':
+    init_download_on_server('{"album": "Good Girl Gone Bad: Reloaded", "thumb": "https://i.scdn.co/image/b1244db3be7cb3c1fd05555c2e53dc5d2b94176d", "title": "Umbrella", "artist": "Rihanna"}')
