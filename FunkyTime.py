@@ -3,11 +3,6 @@ import wx.media
 import Playlist as pl
 import server_requests as sr
 from functools import reduce
-import sndhdr
-from pydub import AudioSegment
-import pyaudio
-import wave
-import time
 import requests
 import sys
 import pdb
@@ -208,7 +203,7 @@ class Funky_GUI(wx.Frame):
 #            self.loadMusic(path)
 #        dlg.Destroy()
 
-    def playSong(current_song):
+    def playSong(self,current_song):
         try:
             if self.mediaPlayer.Play():
                 wx.MessageBox("Unable to Play media : Unsupported format?",
