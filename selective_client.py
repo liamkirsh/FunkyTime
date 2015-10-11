@@ -32,13 +32,15 @@ the_hash = sys.argv[3]
 admitted = []
 admitted_fnames = []
 i=0
+done_with_it = False
 for f in info.files():
     if REQUIRED in f.path:
-        admitted.append(i)
-        admitted_fnames.append(f.path)
-        print f.path
+	if not done_with_it:
+        	admitted.append(i)
+        	admitted_fnames.append(f.path)
+        	print f.path
         i += 1
-        break
+        done_with_it = True
     else:
         i += 1
 MAX_I = i
@@ -84,5 +86,5 @@ dump_dir = os.path.join('downloads', the_hash)
 if not os.path.exists(dump_dir):
     os.makedirs(dump_dir)
 for fname in admitted_fnames:
-    shutil.move(fname, dump_dir)
+    shutil.move(os.path.join('downloads',fname), dump_dir)
 shutil.move(dump_dir, 'outbox')
