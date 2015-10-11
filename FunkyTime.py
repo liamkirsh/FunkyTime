@@ -111,7 +111,7 @@ class Funky_GUI(wx.Frame):
 
 
     def search_torrents(self,event):
-        search_list = self.search_bar.GetValue().split()
+        """search_list = self.search_bar.GetValue().split()
         if len(search_list) > 1:
             query = "http://162.243.156.22/lookup?q="+reduce(lambda x,y: x+'+'+y,search_list)
         else: query = search_list[0]
@@ -120,8 +120,9 @@ class Funky_GUI(wx.Frame):
             meta_data = ut.query_server(query)
         else:
             print("server not up: " + responce); return
-        TEXT=meta_data
-        dlg1 = wx.MessageDialog(None,caption="Conferm Download:", message=TEXT ,style=wx.OK|wx.CANCEL|wx.ICON_EXCLAMATION)
+        TEXT=meta_data"""  #try to see if this works
+        TEXT = ut.get_metadata_from_server(self.search_bar.GetValue())
+        dlg1 = wx.MessageDialog(None,caption="Conferm Download:", message=str(TEXT) ,style=wx.OK|wx.CANCEL|wx.ICON_EXCLAMATION)
         if dlg1.ShowModal() == wx.ID_OK:
             print('you hit okay')
             dlg1.Destroy()
