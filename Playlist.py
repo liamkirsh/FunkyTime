@@ -2,7 +2,13 @@ import wx
 import DatabaseAPI
 import pdb
 
-DEMO = False
+DEMO = True
+
+### TODO
+### ADD BOOLEAN CHECK MARK FOR "SAVE" OR "DELETE"
+### Self.media files, media folder, hashed right now
+### If boolean is checked, move it over to self.media_files
+### convert to mp3 if possible
 
 class Playlist:
     def __init__(self, hbg = 'LIGHT BLUE', nbg = 'WHITE'): 
@@ -13,6 +19,7 @@ class Playlist:
         self.hbg = hbg
         self.nbg = nbg
         self.callback = None
+        self.default_thumb = wx.Bitmap('img/repeat_button.jpg', type=wx.BITMAP_TYPE_JPEG)
 
         if DEMO:
             self.db.empty()
@@ -37,10 +44,12 @@ class Playlist:
 
     def addSong(self, song):
         name = song['name']
+        artist = song['artist']
         album = song['album']
+        thumb = song['thumb']
         path = song['path']
 
-        self.db.addSong(name, album, path)
+        self.db.addSong(name, artist, album, thumb, path)
 
         self.ctrl.InsertStringItem(self.size, name)
         self.ctrl.SetStringItem(self.size, 1, album)
@@ -62,17 +71,31 @@ class Playlist:
         ctrl.Bind(wx.EVT_LIST_ITEM_ACTIVATED, self.onDoubleClick)
         ctrl.Bind(wx.EVT_LIST_ITEM_SELECTED, self.onSelectItem)
 
+        #ctrl.InsertColumn(0, 'Thumb')
         ctrl.InsertColumn(0, 'Song')
-        ctrl.InsertColumn(1, 'Album')
-        ctrl.InsertColumn(2, 'File Path')
-        
+        ctrl.InsertColumn(1, 'Artist')
+        ctrl.InsertColumn(2, 'Album')
+        ctrl.InsertColumn(3, 'File Path')
+
+        #ctrl.SetColumnWidth(0, 50)
+        ctrl.SetColumnWidth(0, 100)
+        ctrl.SetColumnWidth(1, 100)
+        ctrl.SetColumnWidth(2, 100)
+        ctrl.SetColumnWidth(3, 300)
+
         pl = self.db.getPlaylist()
         if pl:
             self.size = len(pl)
             for i, song in enumerate(pl):
-                ctrl.InsertStringItem(i, song[0])
-                ctrl.SetStringItem(i, 1, song[1])
-                ctrl.SetStringItem(i, 2, song[2])
+                #pdb.set_trace()
+                #if song[0]:
+                #    ctrl.InsertImageItem(i, song[0])
+                #else:
+                #    ctrl.InsertImageItem(i, self.default_thumb)
+                ctrl.InsertStringItem(i, song[1])
+                ctrl.SetStringItem(i, 1, song[2])
+                ctrl.SetStringItem(i, 2, song[3])
+                ctrl.SetStringItem(i, 3, song[4])
 
         self.ctrl = ctrl
 
@@ -106,7 +129,7 @@ class Playlist:
     def getCurrentSong(self):
         if self.selected < 0:
             return None
-        result = self.ctrl.GetItem(itemId=self.selected, col=2).GetText()
+        result = self.ctrl.GetItem(itemId=self.selected, col=3).GetText()
         #print 'returning', result
         return result
 

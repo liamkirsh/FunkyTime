@@ -124,10 +124,10 @@ class Funky_GUI(wx.Frame):
         self.Bind(wx.EVT_SLIDER, self.onSeek, self.sliderctrl)
         
         self.currentVolume = 50
-        #self.volumeCtrl = wx.Slider(self, style=wx.SL_VERTICAL|wx.SL_INVERSE)
-        #self.volumeCtrl.SetRange(0, 100)
-        #self.volumeCtrl.SetValue(self.currentVolume)
-        #self.volumeCtrl.Bind(wx.EVT_SLIDER, self.onSetVolume)
+        self.volumectrl = wx.Slider(self.panel, size=(32*5+256*self.GUI_RESOLUTION+5*10,40*self.GUI_RESOLUTION),  style=wx.SL_HORIZONTAL | wx.SL_LABELS)
+        self.volumectrl.SetRange(0, 100)
+        self.volumectrl.SetValue(self.currentVolume)
+        self.Bind(wx.EVT_SLIDER, self.onSetVolume, self.volumectrl)
 
         self.timer = wx.Timer(self)
         self.Bind(wx.EVT_TIMER, self.onTimer)
@@ -146,8 +146,7 @@ class Funky_GUI(wx.Frame):
         self.button_sizer.Add(self.nextButton, 0, wx.LEFT, 5)
         self.button_sizer.Add(self.stopButton, 0, wx.LEFT, 5)
         self.button_sizer.Add(self.repeatButton, 0, wx.LEFT, 5)
-        self.search_sizer.Add(self.search_bar, 0, wx.LEFT, 5)
-        #self.search_sizer.Add(self.volumeCtrl, 0, wx.LEFT, 5)
+        self.search_sizer.Add(self.search_bar, wx.LEFT, 5)
 
         hbox0 = wx.BoxSizer(wx.HORIZONTAL)
         hbox0.Add(self.button_sizer, flag=wx.ALIGN_LEFT, border=8)
@@ -157,6 +156,8 @@ class Funky_GUI(wx.Frame):
         vbox0.Add(hbox0)
         vbox0.Add(self.listctrl)
         vbox0.Add(self.sliderctrl)
+        vbox0.Add(self.volumectrl)
+        vbox0.Add(self.mediaPlayer)
 
         self.panel.SetSizer(vbox0)
         vbox0.Fit(self)
@@ -295,10 +296,10 @@ class Funky_GUI(wx.Frame):
         return False
 
     def onSetVolume(self, event):
-        #self.currentVolume = self.volumeCtrl.GetValue()
-        #print "setting volume to: %s" % int(self.currentVolume)
-        #self.mediaPlayer.SetVolume(self.currentVolume)
-        pass
+        self.currentVolume = self.volumectrl.GetValue()
+        print "setting volume to: %s" % int(self.currentVolume)
+        self.mediaPlayer.SetVolume(float(self.currentVolume)/100)
+        
  
 
 ###########################
