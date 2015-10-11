@@ -6,6 +6,7 @@ from functools import reduce
 from glob import glob
 import AudioConversion as ac
 import requests
+import time
 import sys,os
 import json
 import pdb
@@ -55,21 +56,37 @@ class Funky_GUI(wx.Frame):
         m_exit = menu_file.Append(-1, "&Exit\tctrl-q", "")
         self.Bind(wx.EVT_MENU, self.close_app, m_exit)
 
+#############
+        menu_edit = wx.Menu()
+
+        m_play_pause = menu_edit.Append(-1, "&Play/Pause\tctrl-p", "")
+        self.Bind(wx.EVT_MENU, self.on_play_button, m_play_pause)
+
+        m_prev = menu_edit.Append(-1, "&Previous Track\tctrl-left", "")
+        self.Bind(wx.EVT_MENU, self.on_prev_button, m_prev)
+
+        m_next = menu_edit.Append(-1, "&Next Track\tctrl-right", "")
+        self.Bind(wx.EVT_MENU, self.on_next_button, m_next)
+
+        m_volUp = menu_edit.Append(-1, "&Increase Volume\tctrl-up", "")
+        self.Bind(wx.EVT_MENU, self.IncreaseVol, m_volUp)
+
+        m_volDown = menu_edit.Append(-1, "&Decrease Volume\tctrl-down", "")
+        self.Bind(wx.EVT_MENU, self.DecreaseVol, m_volDown)
+
+        m_shuffle = menu_edit.Append(-1, "&Shuffle\tctrl-h", "")
+        self.Bind(wx.EVT_MENU, self.shuffle, m_shuffle)
+
 
 ##############
         menu_setting = wx.Menu()
-
-        m_volUp = menu_setting.Append(-1, "&Increase Volume\tf9", "")
-        self.Bind(wx.EVT_MENU, self.IncreaseVol, m_volUp)
-
-        m_volDown = menu_setting.Append(-1, "&Decrease Volume\tf8", "")
-        self.Bind(wx.EVT_MENU, self.DecreaseVol, m_volDown)
 
         m_setting = menu_setting.Append(-1, "&Setting", "")
         self.Bind(wx.EVT_MENU, self.open_settings_menu, m_setting)
 
 ###############
         self.menubar.Append(menu_file, "&File")
+        self.menubar.Append(menu_edit, "&Edit")
         self.menubar.Append(menu_setting, "&Setting")
 
         self.SetMenuBar(self.menubar)
@@ -191,6 +208,12 @@ class Funky_GUI(wx.Frame):
         if self.search_media_for_file(query): return
         try:
             meta_data = sr.get_metadata_from_server(query)
+            if meta_data==None:
+                Text="No Torrent Found"
+                dlg1 = wx.MessageDialog(None,caption="Confirm Download:", message=str(Text) ,style=wx.OK|wx.ICON_EXCLAMATION)
+                if dlg1.ShowModal() == wx.ID_OK:
+                    dlg1.Destroy()
+                    return
             open_meta_data = json.loads(meta_data)
         except(requests.exceptions.RequestException):
             print "server not up"
@@ -198,39 +221,47 @@ class Funky_GUI(wx.Frame):
         Text = "Was this the file you were looking for?\nSong: " + open_meta_data['title'] + "\nAlbum: " + open_meta_data['album'] + "\nArtist: " + open_meta_data['artist']
         dlg1 = wx.MessageDialog(None,caption="Confirm Download:", message=str(Text) ,style=wx.OK|wx.CANCEL|wx.ICON_EXCLAMATION)
         if dlg1.ShowModal() == wx.ID_OK:
-            download_hash = sr.init_download_on_server(meta_data)
             dlg1.Destroy()
+            download_hash = sr.init_download_on_server(meta_data)
         else: return
         data = None
         while data is None:
             data,ctype = sr.poll_server(download_hash)
+            time.sleep(2)
         if ctype == 'audio/mpeg':
             filepath = 'music/'+open_meta_data['title']+'.mp3'
             fileout = open(filepath, 'wb')
             fileout.write(data)
-            finalpath = ac.convert_to_wav(filepath,outputpath=os.getcwd()+'/music/'+str(hash(path))+'.wav')
+            finalpath = ac.convert_to_wav(filepath,outputpath=os.getcwd()+'/music/'+str(hash(filepath))+'.wav')
             open_meta_data['path'] = finalpath
-            sys.remove(filepath)
+            open_meta_data['name'] = open_meta_data['title']
+            os.remove(filepath)
             self.playlist.addSong(open_meta_data)
         if ctype == 'audio/m4a':
             filepath = 'music/'+open_meta_data['title']+'.m4a'
             fileout = open(filepath, 'wb')
             fileout.write(data)
-            finalpath = ac.convert_to_wav(filepath,outputpath=os.getcwd()+'/music/'+str(hash(path))+'.wav')
+            finalpath = ac.convert_to_wav(filepath,outputpath=os.getcwd()+'/music/'+str(hash(filepath))+'.wav')
             open_meta_data['path'] = finalpath
-            sys.remove(filepath)
+            open_meta_data['name'] = open_meta_data['title']
+            os.remove(filepath)
             self.playlist.addSong(open_meta_data)
         if ctype == 'audio/x-flac':
             filepath='music/'+open_meta_data['title']+'.flac'
             fileout = open(filepath, 'wb')
             fileout.write(data)
-            finalpath = ac.convert_to_wav(filepath,outputpath=os.getcwd()+'/music/'+str(hash(path))+'.wav')
+            finalpath = ac.convert_to_wav(filepath,outputpath=os.getcwd()+'/music/'+str(hash(filepath))+'.wav')
             open_meta_data['path'] = finalpath
-            sys.remove(filepath)
+            open_meta_data['name'] = open_meta_data['title']
+            os.remove(filepath)
             self.playlist.addSong(open_meta_data)
         if ctype == 'audio/x-wav':
-            fileout = open('music/'+open_meta_data['title']+'.wav', 'wb')
+            filepath = 'music/'+open_meta_data['title']+'.wav'
+            fileout = open(filepath, 'wb')
             fileout.write(data)
+            open_meta_data['path'] = filepath
+            open_meta_data['name'] = open_meta_data['title']
+            self.playlist.addSong(open_meta_data)
 
     def onBrowse(self, event):
         """

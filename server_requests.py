@@ -13,7 +13,7 @@ def get_metadata_from_server(query):
     r = requests.get(server_name + '/lookup', params=payload)
     print r.content
     if (r.content == "Not found"):
-        sys.exit(100)
+        return None
     return r.content
 
 def init_download_on_server(JSON):
@@ -28,9 +28,9 @@ def poll_server(the_hash):
     r = requests.get(server_name + '/ready', params=payload)
     ctype = r.headers['content-type']
     data = r.content
-    print 'ctype', ctype
+#    print 'ctype', ctype
     if 'text/html' in ctype:
-        return None
+        return None, None
     else:
         return data, ctype
 
