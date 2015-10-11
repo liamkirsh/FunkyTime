@@ -199,7 +199,7 @@ class Funky_GUI(wx.Frame):
 
     def onTimer(self, evt):
         offset = self.mediaPlayer.Tell()
-        self.sliderctrl.SetValue(offset // 1000)
+        self.sliderctrl.SetValue(offset // 1000 )
 
 #######################
 
@@ -219,7 +219,7 @@ class Funky_GUI(wx.Frame):
             print "server not up"
             return
         Text = "Was this the file you were looking for?\nSong: " + open_meta_data['title'] + "\nAlbum: " + open_meta_data['album'] + "\nArtist: " + open_meta_data['artist']
-        dlg1 = wx.essageDialog(None,caption="Confirm Download:", message=str(Text) ,style=wx.OK|wx.CANCEL|wx.ICON_EXCLAMATION)
+        dlg1 = wx.messageDialog(None,caption="Confirm Download:", message=str(Text) ,style=wx.OK|wx.CANCEL|wx.ICON_EXCLAMATION)
         if dlg1.ShowModal() == wx.ID_OK:
             download_hash = sr.init_download_on_server(meta_data)
             dlg1.Destroy()
