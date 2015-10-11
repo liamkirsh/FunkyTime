@@ -1,8 +1,10 @@
 import wx
+#from wx.lib.agw import ultimatelistctrl as ulc
+from wx.lib.mixins import listctrl as lc
 import DatabaseAPI
 import pdb
 
-DEMO = True
+DEMO = False
 
 ### TODO
 ### ADD BOOLEAN CHECK MARK FOR "SAVE" OR "DELETE"
@@ -19,7 +21,6 @@ class Playlist:
         self.hbg = hbg
         self.nbg = nbg
         self.callback = None
-        self.default_thumb = wx.Bitmap('img/repeat_button.jpg', type=wx.BITMAP_TYPE_JPEG)
 
         if DEMO:
             self.db.empty()
@@ -30,7 +31,7 @@ class Playlist:
         del_list = []
         while self.ctrl.GetFirstSelected() != -1:
             s = self.ctrl.GetFirstSelected()
-            hg_path = self.ctrl.GetItem(itemId=s, col=2).GetText()
+            hg_path = self.ctrl.GetItem(itemId=s, col=3).GetText()
             del_list.append(hg_path)
 
             self.db.deleteSong(hg_path)
@@ -66,18 +67,18 @@ class Playlist:
         self.selectSong(self.highlighted)
         self.callback(self.getCurrentSong())
     
-    def getListCtrl(self,panel,w,h):
-        ctrl = wx.ListCtrl(panel, id=-1, size=(w,h), style=wx.LC_REPORT)
+    def getListCtrl(self,panel,w,h, callback):
+        #ctrl = wx.ListCtrl(panel, id=-1, size=(w,h), style=wx.LC_REPORT)
+        ctrl = StarredListCtrl(panel, (w,h), callback)
+        #ctrl = ulc.UltimateListCtrl(panel, size=(w,h), agwStyle=wx.LC_REPORT)
         ctrl.Bind(wx.EVT_LIST_ITEM_ACTIVATED, self.onDoubleClick)
         ctrl.Bind(wx.EVT_LIST_ITEM_SELECTED, self.onSelectItem)
 
-        #ctrl.InsertColumn(0, 'Thumb')
         ctrl.InsertColumn(0, 'Song')
         ctrl.InsertColumn(1, 'Artist')
         ctrl.InsertColumn(2, 'Album')
         ctrl.InsertColumn(3, 'File Path')
 
-        #ctrl.SetColumnWidth(0, 50)
         ctrl.SetColumnWidth(0, 100)
         ctrl.SetColumnWidth(1, 100)
         ctrl.SetColumnWidth(2, 100)
@@ -87,16 +88,11 @@ class Playlist:
         if pl:
             self.size = len(pl)
             for i, song in enumerate(pl):
-                #pdb.set_trace()
-                #if song[0]:
-                #    ctrl.InsertImageItem(i, song[0])
-                #else:
-                #    ctrl.InsertImageItem(i, self.default_thumb)
                 ctrl.InsertStringItem(i, song[1])
                 ctrl.SetStringItem(i, 1, song[2])
                 ctrl.SetStringItem(i, 2, song[3])
+                ctrl.SetStringItem(i, 2, song[3])
                 ctrl.SetStringItem(i, 3, song[4])
-
         self.ctrl = ctrl
 
         if self.size > 0:
@@ -129,8 +125,8 @@ class Playlist:
     def getCurrentSong(self):
         if self.selected < 0:
             return None
-        result = self.ctrl.GetItem(itemId=self.selected, col=3).GetText()
-        #print 'returning', result
+        #result = self.ctrl.GetItem(itemId=self.selected, col=3).GetText()
+        result = self.ctrl.GetItem(self.selected, 3).GetText()
         return result
 
     def getNextSong(self):
@@ -141,3 +137,17 @@ class Playlist:
         self.selectSong(self.selected - 1)
         return self.getCurrentSong()
 
+class StarredListCtrl(wx.ListCtrl, lc.CheckListCtrlMixin):
+
+    def __init__(self, parent, size, callback):
+        wx.ListCtrl.__init__(self, parent, -1, size, style=wx.LC_REPORT)
+
+        saved = wx.Bitmap('img/yellowstar.png', type=wx.BITMAP_TYPE_PNG)
+        notsaved = wx.Bitmap('img/blackstar.png', type=wx.BITMAP_TYPE_PNG)
+
+        lc.CheckListCtrlMixin.__init__(self, check_image=saved, uncheck_image=notsaved, imgsz=(16,16))
+
+        self.callback = callback
+
+    def OnCheckItem(self, index, flag):
+        self.callback(index, flag, self.GetItem(index,3).GetText())
