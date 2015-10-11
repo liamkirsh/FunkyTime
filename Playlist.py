@@ -67,9 +67,9 @@ class Playlist:
         self.selectSong(self.highlighted)
         self.callback(self.getCurrentSong())
     
-    def getListCtrl(self,panel,w,h):
+    def getListCtrl(self,panel,w,h, callback):
         #ctrl = wx.ListCtrl(panel, id=-1, size=(w,h), style=wx.LC_REPORT)
-        ctrl = StarredListCtrl(panel, (w,h))
+        ctrl = StarredListCtrl(panel, (w,h), callback)
         #ctrl = ulc.UltimateListCtrl(panel, size=(w,h), agwStyle=wx.LC_REPORT)
         ctrl.Bind(wx.EVT_LIST_ITEM_ACTIVATED, self.onDoubleClick)
         ctrl.Bind(wx.EVT_LIST_ITEM_SELECTED, self.onSelectItem)

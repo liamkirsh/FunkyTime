@@ -116,7 +116,7 @@ class Funky_GUI(wx.Frame):
         self.repeatButton = wx.BitmapButton(self.panel, id=-1, bitmap=img_repeat, size=(32,32))
         self.Bind(wx.EVT_BUTTON, self.on_repeat_button, self.repeatButton)
 
-        self.listctrl = self.playlist.getListCtrl(self.panel,32*5+256*self.GUI_RESOLUTION+5*10,256*self.GUI_RESOLUTION)
+        self.listctrl = self.playlist.getListCtrl(self.panel,32*5+256*self.GUI_RESOLUTION+5*10,256*self.GUI_RESOLUTION, self.on_check_song)
         self.playlist.callback = self.on_double_click
 
         self.sliderctrl = wx.Slider(self.panel, id=-1, minValue=0, maxValue=60, size=(32*5+256*self.GUI_RESOLUTION+5*10,40*self.GUI_RESOLUTION), style=wx.SL_HORIZONTAL | wx.SL_LABELS )
@@ -245,6 +245,9 @@ class Funky_GUI(wx.Frame):
         self.isplaying=PLAY
         self.playOrPauseButton.SetBitmapLabel(self.img_pause)
         self.playSong(song)
+
+    def on_check_song(self, index, flag):
+        print 'Check', index, ',', flag
 
     def on_play_button(self,event):
         current_song = self.playlist.getCurrentSong()
