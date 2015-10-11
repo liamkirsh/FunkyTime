@@ -117,6 +117,7 @@ class Funky_GUI(wx.Frame):
         self.sliderctrl = wx.Slider(self.panel, id=-1, minValue=0, maxValue=60, size=(32*5+256*self.GUI_RESOLUTION+5*10,40*self.GUI_RESOLUTION), style=wx.SL_HORIZONTAL | wx.SL_LABELS )
         self.slidertime = wx.StaticText(self.panel)
         self.Bind(wx.EVT_SLIDER, self.onSeek, self.sliderctrl)
+
         self.timer = wx.Timer(self)
         self.Bind(wx.EVT_TIMER, self.onTimer)
         self.timer.Start(100)
@@ -257,24 +258,10 @@ class Funky_GUI(wx.Frame):
     def button_download(self,event):
         return #xxx
 
-#    def playSong(self, current_song):
-#        if not self.mediaPlayer.Play():
-#            if not self.mediaPlayer.Load(current_song):
-#                wx.MessageBox("Unable to load %s: Unsupported format?" % current_song,
-#                              "ERROR",
-#                              wx.ICON_ERROR | wx.OK)
-#                return
-#        self.mediaPlayer.SetInitialSize()
-#        self.GetSizer().Layout()
-#        self.sliderctrl.SetRange(0, self.mediaPlayer.Length())
-
-#############################
-
     def onMediaLoad(self, evt):
         self.mediaPlayer.Play()
 
     def playSong(self, current_song):
-        current_song = '/Users/isak/Projects/FunkyTime/bass.wav'
         if not self.mediaPlayer.Load(current_song):
             wx.MessageBox("Unable to load %s: Unsupported format?" % current_song,
                           "ERROR",
