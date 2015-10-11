@@ -201,7 +201,7 @@ class Funky_GUI(wx.Frame):
         pass
 
     def delete_file(self, event):
-        pass
+        self.playlist.removeSelected()
 
     def add_file(self, event):
         """
