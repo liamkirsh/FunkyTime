@@ -17,10 +17,12 @@ headers = {'user-agent': 'Wget/1.15 (linux-gnu)'}
 r = requests.get(sys.argv[1], headers=headers)
 #f = urllib2.urlopen(sys.argv[1])
 tFile = sys.argv[1].split('/')[-1]
-with open(os.path.join('torrents', tFile), 'wb') as fd:
+filename = os.path.join('torrents', tFile)
+with open(filename, 'wb') as fd:
 	fd.write(r.content)
 
-info = lt.torrent_info(tFile)
+#filename=sys.argv[1]
+info = lt.torrent_info(filename)
 REQUIRED = sys.argv[2]
 #selection
 admitted = []
