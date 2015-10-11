@@ -1,4 +1,5 @@
 import requests
+#import urllib2
 import libtorrent as lt
 import time
 import sys
@@ -10,12 +11,14 @@ ses.listen_on(6881, 6891)
 # First, accept URL to torrent file as a param and grab it
 if not os.path.exists('torrents'):
     os.makedirs('torrents')
-r = requests.get(sys.argv[1])
+#print sys.argv[1]
+#sys.exit(100)
+headers = {'user-agent': 'Wget/1.15 (linux-gnu)'}
+r = requests.get(sys.argv[1], headers=headers)
+#f = urllib2.urlopen(sys.argv[1])
 tFile = sys.argv[1].split('/')[-1]
-with open(tFile, 'wb') as fd:
-    for chunk in r.iter_content(chunk_size=1024):
-        if chunk:
-            fd.write(chunk)
+with open(os.path.join('torrents', tFile), 'wb') as fd:
+	fd.write(r.content)
 
 info = lt.torrent_info(tFile)
 REQUIRED = sys.argv[2]
@@ -31,7 +34,7 @@ MAX_I = i
 #####This section maintains a list of permitted filenames to download
 
 
-h = ses.add_torrent({'ti': info, 'save_path': './'})
+h = ses.add_torrent({'ti': info, 'save_path': './downloads/'})
 
 
 #prioritization

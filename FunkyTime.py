@@ -10,6 +10,7 @@ import wave
 import time
 import requests
 import sys
+import pdb
 
 class Funky_GUI(wx.Frame):
 
@@ -93,7 +94,11 @@ class Funky_GUI(wx.Frame):
         self.listctrl = self.playlist.getListCtrl(self.panel,32*5+256*self.GUI_RESOLUTION+5*10,256*self.GUI_RESOLUTION)
 
         self.sliderctrl = wx.Slider(self.panel, id=-1, minValue=0, maxValue=60, size=(32*5+256*self.GUI_RESOLUTION+5*10,40*self.GUI_RESOLUTION), style=wx.SL_HORIZONTAL | wx.SL_LABELS )
-
+        self.slidertime = wx.StaticText(self.panel)
+        self.Bind(wx.EVT_SLIDER, self.onSeek, self.sliderctrl)
+        self.timer = wx.Timer(self)
+        self.Bind(wx.EVT_TIMER, self.onTimer)
+        self.timer.Start(100)
 
         ######################SIZERS AND STUFF#######################
 #        for var in ('playOrPauseButton','prevButton','nextButton','stopButton','repeatButton','search_bar'):
@@ -122,9 +127,18 @@ class Funky_GUI(wx.Frame):
         self.panel.SetSizer(vbox0)
         vbox0.Fit(self)
 
+#######################
+# SLIDER STUFF
+#######################
+    def onSeek(self, evt):
+        offset = self.sliderctrl.GetValue()
+        self.mediaPlayer.Seek(offset)
+
+    def onTimer(self, evt):
+        offset = self.mediaPlayer.Tell()
+        self.sliderctrl.SetValue(offset)
 
 #######################
-
 
     def search_torrents(self,event):
         query=self.search_bar.GetValue()
