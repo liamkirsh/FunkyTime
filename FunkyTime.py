@@ -267,10 +267,14 @@ class Funky_GUI(wx.Frame):
 
 
     def on_next_button(self,event):
-        self.playSong(self.playlist.getNextSong())
+        next_song = self.playlist.getNextSong()
+        if next_song:
+            self.playSong(next_song)
 
     def on_prev_button(self,event):
-        self.playSong(self.playlist.getPrevSong())
+        prev_song = self.playlist.getPrevSong()
+        if prev_song:
+            self.playSong(prev_song)
 
     def on_stop_button(self,event):
         self.isplaying=STOP
