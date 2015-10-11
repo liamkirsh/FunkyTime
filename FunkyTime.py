@@ -4,11 +4,8 @@ import Playlist as pl
 import server_requests as sr
 from functools import reduce
 import requests
-import sys
+import sys,os
 import pdb
-import pyaudio 
-import time
-import wave
 
 class Funky_GUI(wx.Frame):
 
@@ -18,6 +15,7 @@ class Funky_GUI(wx.Frame):
         r1=dw/1210.
         r2=dw/640.
         self.GUI_RESOLUTION=min(r1,r2,1.3)
+        self.currentFolder = os.getcwd()
         wx.Frame.__init__(self, None, title="Funky Time", size=(700*self.GUI_RESOLUTION,450*self.GUI_RESOLUTION))
         self.Bind(wx.EVT_CLOSE, self.close_app)
         self.panel = wx.Panel(self,-1,size=(700*self.GUI_RESOLUTION,450*self.GUI_RESOLUTION))
@@ -27,7 +25,6 @@ class Funky_GUI(wx.Frame):
         """ """
         self.CreateMenuBar()
         self.playlist = pl.Playlist()
-        self.pyaudio = pyaudio.PyAudio()
         self.CreateUI()
 
     def CreateMenuBar(self):
@@ -36,10 +33,17 @@ class Funky_GUI(wx.Frame):
 
         menu_file = wx.Menu()
 
+        m_save = menu_file.Append(-1, "&Save File\tctrl-s", "")
+        self.Bind(wx.EVT_MENU, self.save_file, m_save)
+
+        m_delete = menu_file.Append(-1, "&Delete File\tctrl-d", "")
+        self.Bind(wx.EVT_MENU, self.delete_file, m_delete)
+
+        m_set_directory = menu_file.Append(-1, "&Set Media Directory\tctrl-f", "")
+        self.Bind(wx.EVT_MENU, self.onBrowse, m_set_directory)
+
         m_exit = menu_file.Append(-1, "&Exit\tctrl-q", "")
         self.Bind(wx.EVT_MENU, self.close_app, m_exit)
-
-        self.menubar.Append(menu_file, "&File")
 
 
 ##############
@@ -47,8 +51,9 @@ class Funky_GUI(wx.Frame):
         m_setting = menu_setting.Append(-1, "&Setting", "")
         self.Bind(wx.EVT_MENU, self.open_settings_menu, m_setting)
 
-        self.menubar.Append(menu_setting, "&Setting")
 ###############
+        self.menubar.Append(menu_file, "&File")
+        self.menubar.Append(menu_setting, "&Setting")
 
         self.SetMenuBar(self.menubar)
 
@@ -58,7 +63,7 @@ class Funky_GUI(wx.Frame):
 
 ####################
 
-        backend = wx.media.MEDIABACKEND_QUICKTIME
+        backend = wx.media.MEDIABACKEND_
         try:
             self.mediaPlayer = wx.media.PreMediaCtrl()
             ok = self.mediaPlayer.Create(self.panel, szBackend=backend)
@@ -157,6 +162,32 @@ class Funky_GUI(wx.Frame):
             print('you hit okay')
             dlg1.Destroy()
 
+    def onBrowse(self, event):
+        """
+        Opens file dialog to browse for music
+        """
+        wildcard = "MP3 (*.mp3)|*.mp3|"     \
+                   "WAV (*.wav)|*.wav"
+        dlg = wx.FileDialog(
+            self, message="Choose a file",
+            defaultDir=self.currentFolder, 
+            defaultFile="",
+            wildcard=wildcard,
+            style=wx.OPEN | wx.CHANGE_DIR
+            )
+        if dlg.ShowModal() == wx.ID_OK:
+            path = dlg.GetPath()
+            self.currentFolder = os.path.dirname(path)
+        dlg.Destroy()
+
+    def save_file(self, event):
+        pass
+
+    def delete_file(self, event):
+        pass
+
+##########################Menu Files##############################
+
     def close_app(self,event):
         self.Destroy()
 
@@ -192,25 +223,6 @@ class Funky_GUI(wx.Frame):
 
     def button_download(self,event):
         return #xxx
-
-#    def onBrowse(self, event):
-#        """
-#        Opens file dialog to browse for music
-#        """
-#        wildcard = "MP3 (*.mp3)|*.mp3|"     \
-#                   "WAV (*.wav)|*.wav"
-#        dlg = wx.FileDialog(
-#            self, message="Choose a file",
-#            defaultDir=self.currentFolder, 
-#            defaultFile="",
-#            wildcard=wildcard,
-#            style=wx.OPEN | wx.CHANGE_DIR
-#            )
-#        if dlg.ShowModal() == wx.ID_OK:
-#            path = dlg.GetPath()
-#            self.currentFolder = os.path.dirname(path)
-#            self.loadMusic(path)
-#        dlg.Destroy()
 
 #    def playSong(self, current_song):
 #        if not self.mediaPlayer.Play():
