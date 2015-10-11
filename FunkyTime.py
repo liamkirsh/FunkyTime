@@ -179,8 +179,7 @@ class Funky_GUI(wx.Frame):
 
 
     def on_next_button(self,event):
-        self.playSong(self.playlist.getNextSong()) ##
-        return 
+        self.playSong(self.playlist.getNextSong())
 
     def on_prev_button(self,event):
         return 
