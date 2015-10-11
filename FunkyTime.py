@@ -203,7 +203,9 @@ class Funky_GUI(wx.Frame):
         pass
 
     def delete_file(self, event):
-        self.playlist.removeSelected()
+        files_deleted = self.playlist.removeSelected()
+        for dfile in files_deleted:
+            os.remove(dfile)
 
     def add_file(self, event):
         """
@@ -288,7 +290,8 @@ class Funky_GUI(wx.Frame):
 
     def search_media_for_file(self, query):
         """return bool of wather or not file is found, if file is found pass it to playlist"""
-        
+        paths = glob.glob("*/*query*")
+        print(paths)
         return False
 
     def onSetVolume(self, event):
