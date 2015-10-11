@@ -40,16 +40,17 @@ class Playlist:
 
     def onSelectItem(self, evt):
         #print 'Item selected', evt.Item.Id
-        self.highlighted = evt.Item.Id
+        self.highlighted = evt.GetIndex()
 
     def onDoubleClick(self, evt):
         #print 'DOUBLE CLICK:', evt
+        self.onSelectItem(evt)
         self.selectSong(self.highlighted)
         self.callback(self.getCurrentSong())
     
     def getListCtrl(self,panel,w,h):
         ctrl = wx.ListCtrl(panel, id=-1, size=(w,h), style=wx.LC_REPORT)
-        ctrl.Bind(wx.EVT_LEFT_DCLICK, self.onDoubleClick)
+        ctrl.Bind(wx.EVT_LIST_ITEM_ACTIVATED, self.onDoubleClick)
         ctrl.Bind(wx.EVT_LIST_ITEM_SELECTED, self.onSelectItem)
 
         ctrl.InsertColumn(0, 'Song')
