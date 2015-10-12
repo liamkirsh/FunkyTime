@@ -39,7 +39,7 @@ if __name__ == '__main__':
     metadata = get_metadata_from_server(argv[1])
     hash = init_download_on_server(metadata)
     dataNtype = poll_server(hash)
-    while dataNtype is None:
+    while dataNtype == (None, None):
         time.sleep(2)
         dataNtype = poll_server(hash)
     with open('file', "wb") as f:
