@@ -22,11 +22,12 @@ Set up a web server with Node.js and Python 2.7 installed. Install the following
 
 Open ports 22 and 80.
 
-Set up the directory structure this way:
-/MusicTime/MusicTime.js
-/MusicTime/scripts/bittorrent.py <-- selective_client.py in this repo
-/MusicTime/scripts/KAT.py <-- first_result.py in this repo
-/MusicTime/scripts/KickassAPI.py
-/Musictime/scripts/Spotify.py
+Set up the directory structure this way:  
+
+/MusicTime/MusicTime.js  
+/MusicTime/scripts/bittorrent.py  
+/MusicTime/scripts/KAT.py  
+/MusicTime/scripts/KickassAPI.py  
+/MusicTime/scripts/Spotify.py  
 
 Run sudo node MusicTime.js. You should see the message "Express server listening on port 80."
