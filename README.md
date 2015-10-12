@@ -24,10 +24,10 @@ Open ports 22 and 80.
 
 Set up the directory structure this way:  
 
-/MusicTime/MusicTime.js  
-/MusicTime/scripts/bittorrent.py  
-/MusicTime/scripts/KAT.py  
-/MusicTime/scripts/KickassAPI.py  
-/MusicTime/scripts/Spotify.py  
+/FunkyTime/FunkyTime.js  
+/FunkyTime/scripts/bittorrent.py  
+/FunkyTime/scripts/KAT.py  
+/FunkyTime/scripts/KickassAPI.py  
+/FunkyTime/scripts/Spotify.py  
 
-Run sudo node MusicTime.js. You should see the message "Express server listening on port 80."
+Run sudo node FunkyTime.js. You should see the message "Express server listening on port 80."
