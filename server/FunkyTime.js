@@ -1,4 +1,3 @@
-var timeout = require('connect-timeout');
 var express = require('express');
 var app = express();
 var bodyParser = require('body-parser');
