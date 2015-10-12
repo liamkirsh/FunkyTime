@@ -1,6 +1,6 @@
-# PopcornTimeForMusic
+# FunkyTime 
 
-## 2015 Cal Hacks Project
+## Popcorn Time for Music -- Cal Hacks 2.0 Project
 
 ### Contributors
 * Liam
