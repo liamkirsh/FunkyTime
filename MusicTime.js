@@ -8,6 +8,14 @@ var jsonParser = bodyParser.json();
 
 var port = 80;
 
+// This endpoint looks up track metadata through Spotify and returns the first result.
+// Input: a get request for the song name followed by a title (e.g. http://162.243.156.22/lookup?q=beethoven%20moonlight%20sonata)
+// Returns: if a result is found, returns application/json data containing keys:
+// * "album" The album title
+// * "thumb" A direct URL to the album art
+// * "title" The song title
+// * "artist" The artist name
+// if a result is found found, returns "Not found"
 app.get('/lookup', function(req, res) {
 	console.log('Lookup endpoint');
 	var query = req.query.q;
@@ -29,6 +37,10 @@ app.get('/lookup', function(req, res) {
 	});
 });
 
+// This endpoint initiates a torrent download on the server.
+// Input: The same JSON from the /lookup endpoint passed back as a POST request
+// Returns: if a torrent is found, returns the hash of the JSON metadata
+// else returns "Not found"
 app.post('/initiate', jsonParser, function(req, res) {
 	//console.log(req.body);
 	//console.log('Initiate endpoint');
@@ -60,6 +72,11 @@ app.post('/initiate', jsonParser, function(req, res) {
 	});
 });
 
+// This endpoint asks the server if the track with the metadata that generates the given MD5 hash has finished downloading
+// Input: a hash of the JSON metadata
+// Returns: if the file is not done downloading, returns "None"
+// if the directory hash exists but the file is not there, returns "Error: Missing audio file"
+// if the file is done, sends back the file
 app.get('/ready', function(req, res) {
 	console.log('Ready endpoint');
 	var hash = req.query.hash;
