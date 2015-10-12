@@ -31,6 +31,6 @@ Set up the directory structure this way:
 /FunkyTime/scripts/KickassAPI.py  
 /FunkyTime/scripts/Spotify.py  
 
-Run sudo node FunkyTime.js. You should see the message "Express server listening on port 80."
+Run sudo node FunkyTime.js. You should see the message "Express server listening on port 80." You can run app/server_requests.py from the commandline to test your server -- just pass a single string as a parameter containing the track name and artist.
 #### Client
 Run python FunkyTime.py in the app directory. You will need Python 2.7 and the wxPython and pydub modules installed. You may also need ffmpeg installed on your system to use the pydub module.
