@@ -20,7 +20,7 @@ Set up a web server with Node.js and Python 2.7 installed. Install the following
 * express
 * http
 
-Open ports 22 and 80.
+Open incoming ports 22 and 80 and outgoing ports 6881 and 6891.
 
 Set up the directory structure this way:  
 
