@@ -15,6 +15,7 @@
 * EECS Masterrace
 
 ### How to use
+#### Server
 Set up a web server with Node.js and Python 2.7 installed. Install the following Node modules:
 * body-parser
 * express
@@ -31,3 +32,5 @@ Set up the directory structure this way:
 /FunkyTime/scripts/Spotify.py  
 
 Run sudo node FunkyTime.js. You should see the message "Express server listening on port 80."
+#### Client
+Run python FunkyTime.py in the app directory. You will need Python 2.7 and the wxPython and pydub modules installed. You may also need ffmpeg installed on your system to use the pydub module.
