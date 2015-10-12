@@ -35,7 +35,6 @@ def poll_server(the_hash):
         return data, ctype
 
 if __name__ == '__main__':
-    '''#init_download_on_server('{"album": "Good Girl Gone Bad: Reloaded", "thumb": "https://i.scdn.co/image/b1244db3be7cb3c1fd05555c2e53dc5d2b94176d", "title": "Umbrella", "artist": "Rihanna"}')'''
     metadata = get_metadata_from_server(argv[1])
     hash = init_download_on_server(metadata)
     dataNtype = poll_server(hash)
@@ -44,9 +43,3 @@ if __name__ == '__main__':
         dataNtype = poll_server(hash)
     with open('file', "wb") as f:
         f.write(dataNtype[0])
-
-    '''dataNtype = poll_server("670b7d929218f7e36622e202eebb3fd1")
-    while dataNtype is None:
-        dataNtype = poll_server("670b7d929218f7e36622e202eebb3fd1")
-    print dataNtype[1]
-    '''
