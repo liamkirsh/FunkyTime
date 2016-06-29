@@ -2,6 +2,8 @@
 
 ## Popcorn Time for Music -- Cal Hacks 2.0 Project
 
+http://devpost.com/software/funkytime
+
 ### Contributors
 * Liam
 * Omer
